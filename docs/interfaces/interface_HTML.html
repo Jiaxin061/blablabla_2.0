@@ -1,0 +1,2944 @@
+<!-- vBlaFarm - Updated Navigation -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>vBlaFarm - Autonomous Farming Companion</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#75584d",
+                        "surface-tint": "#47654d",
+                        "tertiary-fixed": "#ffd9df",
+                        "primary-container": "#5d7c62",
+                        "on-surface-variant": "#424842",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c2c8c0",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f1f1ed",
+                        "surface-container-high": "#e9e8e4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#03210e",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#727971",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-container": "#eeeeea",
+                        "on-secondary-fixed-variant": "#5b4137",
+                        "inverse-surface": "#2f312e",
+                        "primary": "#45634b",
+                        "on-secondary-container": "#795c51",
+                        "on-error-container": "#93000a",
+                        "surface-dim": "#dadad6",
+                        "surface-container-highest": "#e3e3df",
+                        "tertiary-fixed-dim": "#efb8c2",
+                        "secondary-fixed": "#ffdbce",
+                        "on-tertiary-fixed": "#311119",
+                        "tertiary-container": "#966871",
+                        "surface-container-low": "#f4f4f0",
+                        "secondary-fixed-dim": "#e4beb2",
+                        "primary-fixed-dim": "#adcfb1",
+                        "on-primary-container": "#f7fff4",
+                        "on-primary-fixed-variant": "#304d36",
+                        "on-tertiary-container": "#fffbff",
+                        "on-surface": "#1a1c1a",
+                        "inverse-primary": "#adcfb1",
+                        "secondary-container": "#fed7ca",
+                        "surface-bright": "#faf9f5",
+                        "on-secondary-fixed": "#2b160f",
+                        "tertiary": "#7b5059",
+                        "on-tertiary-fixed-variant": "#633b44",
+                        "on-background": "#1a1c1a",
+                        "on-error": "#ffffff",
+                        "surface": "#faf9f5",
+                        "background": "#faf9f5",
+                        "primary-fixed": "#c9ebcc",
+                        "surface-variant": "#e3e3df"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "touch-target-min": "56px",
+                        "stack-space": "24px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Atkinson Hyperlegible Next"],
+                        "headline-lg": ["Atkinson Hyperlegible Next"],
+                        "body-md": ["Atkinson Hyperlegible Next"],
+                        "button-text": ["Atkinson Hyperlegible Next"],
+                        "body-lg": ["Atkinson Hyperlegible Next"],
+                        "headline-md": ["Atkinson Hyperlegible Next"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Atkinson Hyperlegible Next', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+        .animate-pulse-slow {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface/80 backdrop-blur-md px-margin-mobile py-4 flex justify-between items-center border-b border-surface-container-high">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed shadow-sm">
+<img alt="Profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAmMgXDbY4M_L7NwkQq9UYg6WRkzXbpSH_rsCmJ7QfN6chlJYYv1LcG6rkBNNMB1jsAKlCQfCpmsaTduPyK3cIoJuG1sV2qiGwU2x5L76vTZ_rqQi10ip74wbEslF1EofmHENLNhEsJBzd4jstQV6rSXoE8ESNYAsXVkxreY2md-u0l7Ced00k5MUiazLQkPlz27mbxu4YIZmbIxjJOyi_HFc_FXABEXeG88XAL4tkrbII-CLPmxo79ylVua9yJEf01cyw_KAZ5niJ"/>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h1 class="text-headline-md font-bold text-primary">vBlaFarm</h1>
+<div class="flex items-center gap-1 bg-primary/10 px-2 py-0.5 rounded-full">
+<div class="w-2 h-2 bg-primary rounded-full animate-pulse-slow"></div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">AI Active</span>
+</div>
+</div>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</header>
+<main class="mt-20 px-margin-mobile space-y-6">
+<!-- Dynamic AI Farm Health Hero -->
+<section class="w-full">
+<div class="bg-surface-container-lowest rounded-[2.5rem] p-6 shadow-[0_8px_30px_rgba(93,124,98,0.12)] border border-surface-container-high relative overflow-hidden">
+<div class="flex items-start justify-between mb-6">
+<div class="flex items-center gap-4">
+<div class="relative">
+<div class="absolute inset-0 bg-primary/20 rounded-full animate-ping scale-150 opacity-20"></div>
+<div class="w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-lg relative z-10">
+<span class="material-symbols-outlined text-white text-[32px]" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+</div>
+<div>
+<h2 class="text-headline-lg font-bold text-on-surface">Farm Healthy</h2>
+<p class="text-label-lg text-on-surface-variant">Last updated 2 min ago</p>
+</div>
+</div>
+<div class="flex flex-col items-end gap-1">
+<span class="text-[11px] font-bold uppercase tracking-widest text-primary">Auto Mode</span>
+<div class="w-14 h-8 bg-primary rounded-full relative p-1 flex items-center justify-end shadow-inner cursor-pointer">
+<div class="w-6 h-6 bg-white rounded-full shadow-md"></div>
+</div>
+</div>
+</div>
+<div class="bg-primary/5 rounded-2xl p-4 border border-primary/10 mb-6">
+<p class="text-body-lg font-medium text-on-surface leading-snug">
+                        "Detected stable growing conditions today. Rack B moisture trending lower than optimal. <span class="text-primary font-bold">Auto irrigation scheduled.</span>"
+                    </p>
+</div>
+<div class="w-full h-40 rounded-3xl overflow-hidden relative shadow-inner">
+<img alt="Farm Overview" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvgYkq1BwJ0oukT7BXfTKXcwPSXN16ecO4cttV6V2vt1Wi9HxXkbtwLKhFIjaJsgxrzEGYAAYvhl6gNd8ru0v41LHBHFPJs7UvUtgX1uVBqXhS-swGKJM7S48pW-aHa_RBkesCpNQmP4FYc1Jq4e79yOwFmqcaKBwLfpZyDwt_dgD2i__-nzXDBdj6yohF6uiJVX3NDCJkxygDA_FNrqIXdqEc5y_0j4okRDTpmyMCsCO0ch2TZ3knfTZmaX88-jQ4GoUO8NyIcT28"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-4 left-4 right-4 flex justify-between items-center">
+<div class="flex gap-2">
+<span class="px-2 py-1 glass rounded-lg text-[10px] font-bold text-on-surface">LIVE FEED</span>
+<span class="px-2 py-1 bg-primary/80 backdrop-blur-sm rounded-lg text-[10px] font-bold text-white">RACK A</span>
+</div>
+<span class="material-symbols-outlined text-white" data-icon="fullscreen">fullscreen</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Priority Alerts (Chips) -->
+<section>
+<div class="flex gap-3 overflow-x-auto pb-2 hide-scrollbar -mx-margin-mobile px-margin-mobile">
+<div class="flex-shrink-0 px-4 py-2 bg-error-container text-on-error-container rounded-full flex items-center gap-2 border border-error/10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="warning">warning</span>
+<span class="text-label-lg font-bold">Water Tank Low</span>
+</div>
+<div class="flex-shrink-0 px-4 py-2 bg-secondary-container text-on-secondary-container rounded-full flex items-center gap-2 border border-secondary/10 shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="opacity">opacity</span>
+<span class="text-label-lg font-bold">pH Slightly High</span>
+</div>
+<div class="flex-shrink-0 px-4 py-2 bg-surface-container-high text-on-surface-variant rounded-full flex items-center gap-2 border border-outline-variant shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="info">info</span>
+<span class="text-label-lg font-bold">System Update</span>
+</div>
+</div>
+</section>
+<!-- Quick Actions -->
+<section>
+<div class="grid grid-cols-2 gap-4">
+<button class="h-32 bg-gradient-to-br from-primary-container to-primary text-on-primary rounded-[2rem] flex flex-col items-center justify-center p-4 gap-2 transition-all active:scale-95 shadow-lg shadow-primary/20 relative group overflow-hidden">
+<div class="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition-opacity"></div>
+<div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mb-1">
+<span class="material-symbols-outlined text-[32px]" data-icon="center_focus_strong">center_focus_strong</span>
+</div>
+<span class="text-label-lg font-bold">Open AR Scan</span>
+</button>
+<div class="grid grid-rows-2 gap-4">
+<button class="bg-surface-container-high text-on-surface rounded-[1.5rem] flex items-center px-4 gap-3 transition-transform active:scale-95 border border-surface-container-highest">
+<span class="material-symbols-outlined text-primary" data-icon="water_drop">water_drop</span>
+<span class="text-label-lg font-bold">Irrigate</span>
+</button>
+<button class="bg-surface-container-high text-on-surface rounded-[1.5rem] flex items-center px-4 gap-3 transition-transform active:scale-95 border border-surface-container-highest">
+<span class="material-symbols-outlined text-primary" data-icon="light_mode">light_mode</span>
+<span class="text-label-lg font-bold">Light Settings</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Mini Farm Visualization -->
+<section>
+<h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-[0.2em] mb-4">Vertical Racks Status</h3>
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-surface-container-low p-4 rounded-2xl border border-surface-container-high flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant">RACK A</span>
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div class="bg-secondary-container/30 p-4 rounded-2xl border border-secondary-container flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant">RACK B</span>
+<span class="material-symbols-outlined text-secondary text-[28px]" style="font-variation-settings: 'FILL' 1;">report</span>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl border border-surface-container-high flex flex-col items-center gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant">RACK C</span>
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+</section>
+<!-- AI Automation Timeline -->
+<section>
+<div class="flex justify-between items-end mb-4">
+<h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-[0.2em]">Autonomous Activity</h3>
+<span class="text-label-lg text-primary font-bold">View History</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center gap-4 bg-primary-fixed/30 p-4 rounded-2xl border border-primary-fixed-dim">
+<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="text-xl">🧠</span>
+</div>
+<div class="flex-1">
+<p class="text-label-lg font-bold text-on-primary-fixed">AI activated irrigation</p>
+<p class="text-xs text-on-primary-fixed-variant">Scheduled optimization for Rack B • 12m ago</p>
+</div>
+</div>
+<div class="flex items-center gap-4 bg-surface-container-low p-4 rounded-2xl border border-surface-container-high">
+<div class="w-10 h-10 bg-white rounded-full flex items-center justify-center flex-shrink-0 shadow-sm">
+<span class="text-xl">💡</span>
+</div>
+<div class="flex-1">
+<p class="text-label-lg font-bold text-on-surface">LED brightness adjusted</p>
+<p class="text-xs text-on-surface-variant">Spectrum tuned for flowering phase • 1h ago</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Metric Categories & Swipeable Tabs -->
+<section class="space-y-6">
+<div class="flex gap-6 border-b border-surface-container-high pb-2 overflow-x-auto hide-scrollbar">
+<button class="text-label-lg font-bold text-primary border-b-4 border-primary pb-2 whitespace-nowrap">Environment</button>
+<button class="text-label-lg font-bold text-on-surface-variant pb-2 whitespace-nowrap">Resources</button>
+<button class="text-label-lg font-bold text-on-surface-variant pb-2 whitespace-nowrap">Plant Health</button>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<!-- Metric Card 1 -->
+<div class="bg-surface-container-low p-4 rounded-3xl border border-surface-container-high flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" data-icon="thermostat">thermostat</span>
+</div>
+<span class="px-2 py-0.5 bg-primary/10 text-primary rounded-full text-[10px] font-bold">STABLE</span>
+</div>
+<div>
+<p class="text-label-lg text-on-surface-variant font-medium">Temp</p>
+<p class="text-headline-md font-bold text-on-surface">24.5°C</p>
+</div>
+</div>
+<!-- Metric Card 2 -->
+<div class="bg-surface-container-low p-4 rounded-3xl border border-surface-container-high flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-primary shadow-sm">
+<span class="material-symbols-outlined" data-icon="humidity_percentage">humidity_percentage</span>
+</div>
+<span class="px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full text-[10px] font-bold">OPTIMAL</span>
+</div>
+<div>
+<p class="text-label-lg text-on-surface-variant font-medium">Humidity</p>
+<p class="text-headline-md font-bold text-on-surface">68%</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Floating AI Assistant Button -->
+<button class="fixed bottom-28 right-6 z-[60] bg-gradient-to-tr from-primary to-[#6e8a75] text-on-primary py-4 px-6 rounded-full flex items-center gap-3 shadow-[0_10px_25px_rgba(69,99,75,0.4)] border border-white/20 active:scale-95 transition-all">
+<span class="text-xl">💬</span>
+<span class="text-label-lg font-bold tracking-tight">Ask AI</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface-container-lowest rounded-t-[2rem] flex justify-around items-center px-4 pb-8 pt-4 shadow-[0_-4px_20px_rgba(93,124,98,0.08)] border-t border-surface-container-high">
+<!-- Home (Active) -->
+<a class="flex flex-col items-center justify-center text-primary gap-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</a>
+<!-- AI Chat -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant gap-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[28px]">psychology_alt</span>
+<span class="text-label-lg font-label-lg">Chat</span>
+</a>
+<!-- Scan -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant gap-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[28px]">center_focus_strong</span>
+<span class="text-label-lg font-label-lg">Scan</span>
+</a>
+<!-- Insights -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant gap-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[28px]">insights</span>
+<span class="text-label-lg font-label-lg">Insights</span>
+</a>
+<!-- Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant gap-1 transition-all active:scale-95" href="#">
+<span class="material-symbols-outlined text-[28px]">person</span>
+<span class="text-label-lg font-label-lg">Profile</span>
+</a>
+</nav>
+</body></html>
+
+<!-- AR Scanner -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AR Rack Scanning - FarmPilot AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-container": "#fffbff",
+                    "inverse-on-surface": "#f1f1ed",
+                    "on-tertiary-fixed": "#311119",
+                    "surface-variant": "#e3e3df",
+                    "surface-dim": "#dadad6",
+                    "on-primary-container": "#f7fff4",
+                    "secondary": "#75584d",
+                    "tertiary-fixed": "#ffd9df",
+                    "on-tertiary": "#ffffff",
+                    "on-surface": "#1a1c1a",
+                    "primary-fixed-dim": "#adcfb1",
+                    "background": "#faf9f5",
+                    "error-container": "#ffdad6",
+                    "tertiary-container": "#966871",
+                    "on-secondary-container": "#795c51",
+                    "on-secondary-fixed": "#2b160f",
+                    "secondary-fixed-dim": "#e4beb2",
+                    "secondary-fixed": "#ffdbce",
+                    "on-primary": "#ffffff",
+                    "on-surface-variant": "#424842",
+                    "tertiary": "#7b5059",
+                    "outline-variant": "#c2c8c0",
+                    "primary-fixed": "#c9ebcc",
+                    "inverse-surface": "#2f312e",
+                    "on-secondary-fixed-variant": "#5b4137",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#03210e",
+                    "on-background": "#1a1c1a",
+                    "primary": "#45634b",
+                    "surface-tint": "#47654d",
+                    "surface-container-highest": "#e3e3df",
+                    "on-error": "#ffffff",
+                    "surface": "#faf9f5",
+                    "primary-container": "#5d7c62",
+                    "surface-container-high": "#e9e8e4",
+                    "error": "#ba1a1a",
+                    "tertiary-fixed-dim": "#efb8c2",
+                    "on-secondary": "#ffffff",
+                    "inverse-primary": "#adcfb1",
+                    "secondary-container": "#fed7ca",
+                    "on-tertiary-fixed-variant": "#633b44",
+                    "outline": "#727971",
+                    "on-primary-fixed-variant": "#304d36",
+                    "surface-bright": "#faf9f5",
+                    "surface-container": "#eeeeea",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-low": "#f4f4f0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "gutter": "16px",
+                    "touch-target-min": "56px",
+                    "stack-space": "24px"
+            },
+            "fontFamily": {
+                    "button-text": ["Atkinson Hyperlegible Next"],
+                    "label-lg": ["Atkinson Hyperlegible Next"],
+                    "body-lg": ["Atkinson Hyperlegible Next"],
+                    "headline-md": ["Atkinson Hyperlegible Next"],
+                    "body-md": ["Atkinson Hyperlegible Next"],
+                    "headline-lg": ["Atkinson Hyperlegible Next"]
+            },
+            "fontSize": {
+                    "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+        .ar-overlay {
+            background: linear-gradient(0deg, rgba(26, 28, 26, 0.4) 0%, rgba(26, 28, 26, 0) 40%, rgba(26, 28, 26, 0) 60%, rgba(26, 28, 26, 0.4) 100%);
+        }
+        .scan-frame {
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md overflow-hidden h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface dark:bg-surface-dim flex justify-between items-center px-margin-mobile py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User profile photo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS2SCT-cAYe9ZulUksLWB7WO2cUmEI0o3XPDo8CfGvv-uOkgXqFomR-zWPLTNmvPTVCSx5rIfRo28G3iLdOpddvjUwrK_-5hf4Ufa-2gyKKf6aPPNe6qiQMQaytql8BVIsOr3YjqUZuKouYaNmk_KNaJ30U7CiT_s6qK39qbhx9P9ckg6EslNpv2lX9HUaiAY0RCvUvmBkO1aJf0K1Bc0ij54Cn5uPPgu4pJO7QfF5ahWFOF816uLQ91-sTigaqE0m6lCezOFQcyCV"/>
+</div>
+<h1 class="text-headline-lg font-headline-lg font-bold text-primary dark:text-inverse-primary">FarmPilot AI</h1>
+</div>
+<button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors active:scale-95 duration-150">
+<span class="material-symbols-outlined text-primary dark:text-inverse-primary" data-icon="settings">settings</span>
+</button>
+</header>
+<!-- Camera Viewport (Background) -->
+<main class="relative flex-grow w-full h-full pt-16 pb-24 overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A high-tech indoor vertical farm with rows of vibrant green lettuce growing under soft purple and white LED lights. The scene is bright and clean, reflecting a modern light-mode agricultural setting. The plants are lush and healthy, arranged in precise hydroponic racks that stretch into the distance. The overall mood is one of scientific precision and sustainable growth, using a palette of deep greens and crisp whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8QbEQxWcdjVLaojZR8KtffqW-sCHIzOgUJJTS1BdK20LiQVhTiBlfzjqjVJnkyY44XQv954z30xq9h8qHV9jUIsHywzYcnnk6iijLw9dow2RKWCJhwtr8UGMODiLGxBf5ki5RVuOiIO_ugkRLH5yIMLXPop8vQCksUWTo6p3632jW1C2HEJlmCtEGu7leI3IFb66IwU1lTCBFEAeYVXIMMnEhU-EIzSEW4HtNuTbrxSeIbHJYeLBqjJLbhQ7icDti2tNs8SvuPcWl"/>
+<div class="ar-overlay absolute inset-0"></div>
+</div>
+<!-- Scanning Interface Overlay -->
+<div class="absolute inset-0 z-10 flex flex-col items-center justify-center pointer-events-none">
+<!-- Central Scan Frame -->
+<div class="scan-frame w-72 h-72 rounded-3xl border-white border-dashed relative">
+<div class="absolute -top-1 -left-1 w-8 h-8 border-t-4 border-l-4 border-primary rounded-tl-xl"></div>
+<div class="absolute -top-1 -right-1 w-8 h-8 border-t-4 border-right-4 border-primary rounded-tr-xl"></div>
+<div class="absolute -bottom-1 -left-1 w-8 h-8 border-b-4 border-l-4 border-primary rounded-bl-xl"></div>
+<div class="absolute -bottom-1 -right-1 w-8 h-8 border-b-4 border-right-4 border-primary rounded-br-xl"></div>
+<!-- Scanning Line Animation Simulation -->
+<div class="absolute top-0 left-0 w-full h-1 bg-primary/40 shadow-[0_0_15px_rgba(69,99,75,0.8)] opacity-50"></div>
+</div>
+<!-- Floating AR Info Cards (Anchored to detection) -->
+<div class="absolute top-1/4 right-margin-mobile flex flex-col gap-3 pointer-events-auto max-w-[200px]">
+<!-- Card 1: Crop -->
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border-l-4 border-primary transform translate-x-0 transition-transform">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="potted_plant">potted_plant</span>
+<span class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider">Crop</span>
+</div>
+<p class="text-headline-md font-headline-md text-on-surface">Lettuce</p>
+</div>
+<!-- Card 2: Growth Stage -->
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border-l-4 border-secondary transform translate-x-2 transition-transform">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="eco">eco</span>
+<span class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider">Stage</span>
+</div>
+<p class="text-headline-md font-headline-md text-on-surface">Seedling</p>
+</div>
+<!-- Metrics Row -->
+<div class="flex gap-2 w-full">
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm p-3 rounded-xl shadow-lg flex-1">
+<span class="material-symbols-outlined text-primary-container text-sm block mb-1" data-icon="humidity_mid">humidity_mid</span>
+<p class="text-label-lg font-label-lg text-on-surface">75%</p>
+</div>
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm p-3 rounded-xl shadow-lg flex-1">
+<span class="material-symbols-outlined text-tertiary text-sm block mb-1" data-icon="device_thermostat">device_thermostat</span>
+<p class="text-label-lg font-label-lg text-on-surface">22°C</p>
+</div>
+</div>
+<!-- Card 3: Harvest Schedule -->
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm p-4 rounded-xl shadow-lg border-l-4 border-tertiary-container transform translate-x-4 transition-transform">
+<div class="flex items-center gap-2 mb-1">
+<span class="material-symbols-outlined text-tertiary-container text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider">Harvest</span>
+</div>
+<p class="text-headline-md font-headline-md text-on-surface mb-2">In 3 days</p>
+<button class="flex items-center justify-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-lg font-label-lg text-label-lg hover:bg-primary-container hover:text-on-primary-container transition-all w-full active:scale-95 shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="event">event</span>
+    Add to calendar
+  </button>
+</div></div>
+</div>
+<!-- Floating Action Buttons Layer -->
+<div class="absolute bottom-stack-space left-0 w-full px-margin-mobile z-20 flex flex-col gap-4 pointer-events-none">
+<div class="flex flex-col gap-4 max-w-md mx-auto w-full pointer-events-auto">
+<button class="h-14 w-full bg-primary text-on-primary rounded-xl shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="water_drop" data-weight="fill" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+<span class="font-button-text text-button-text">Activate Irrigation</span>
+</button>
+<button class="h-14 w-full bg-surface-container-highest text-on-surface rounded-xl shadow-lg flex items-center justify-center gap-3 active:scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-button-text text-button-text">View Insights</span>
+</button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-4 pt-2 bg-surface-container-lowest dark:bg-surface-container-low rounded-t-xl shadow-lg">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-label-lg font-label-lg">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-2 scale-90 duration-200">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="text-label-lg font-label-lg">Scan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="psychology_alt">psychology_alt</span>
+<span class="text-label-lg font-label-lg">Assistant</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="text-label-lg font-label-lg">Alerts</span>
+<span class="absolute top-2 right-4 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</nav>
+</body></html>
+
+<!-- AR Scanner - Harvest Action -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rack B Digital Twin - FarmPilot AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "background": "#faf9f5",
+            "on-tertiary-container": "#fffbff",
+            "on-secondary-fixed-variant": "#5b4137",
+            "secondary-container": "#fed7ca",
+            "primary-fixed-dim": "#adcfb1",
+            "secondary-fixed": "#ffdbce",
+            "surface-container-high": "#e9e8e4",
+            "secondary-fixed-dim": "#e4beb2",
+            "surface-container-low": "#f4f4f0",
+            "on-error-container": "#93000a",
+            "inverse-on-surface": "#f1f1ed",
+            "primary-fixed": "#c9ebcc",
+            "on-tertiary": "#ffffff",
+            "error": "#ba1a1a",
+            "on-tertiary-fixed-variant": "#633b44",
+            "error-container": "#ffdad6",
+            "primary-container": "#5d7c62",
+            "tertiary-fixed": "#ffd9df",
+            "surface-bright": "#faf9f5",
+            "on-secondary-fixed": "#2b160f",
+            "on-primary-fixed-variant": "#304d36",
+            "on-background": "#1a1c1a",
+            "surface-container-lowest": "#ffffff",
+            "primary": "#45634b",
+            "surface-variant": "#e3e3df",
+            "outline-variant": "#c2c8c0",
+            "tertiary": "#7b5059",
+            "on-tertiary-fixed": "#311119",
+            "on-secondary-container": "#795c51",
+            "inverse-surface": "#2f312e",
+            "surface-tint": "#47654d",
+            "surface": "#faf9f5",
+            "tertiary-fixed-dim": "#efb8c2",
+            "on-secondary": "#ffffff",
+            "on-surface": "#1a1c1a",
+            "surface-container-highest": "#e3e3df",
+            "surface-container": "#eeeeea",
+            "inverse-primary": "#adcfb1",
+            "on-primary-fixed": "#03210e",
+            "outline": "#727971",
+            "tertiary-container": "#966871",
+            "on-primary": "#ffffff",
+            "on-primary-container": "#f7fff4",
+            "on-error": "#ffffff",
+            "surface-dim": "#dadad6",
+            "secondary": "#75584d",
+            "on-surface-variant": "#424842"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin-mobile": "20px",
+            "gutter": "16px",
+            "touch-target-min": "56px",
+            "stack-space": "24px"
+          },
+          "fontFamily": {
+            "button-text": ["Atkinson Hyperlegible Next"],
+            "headline-lg": ["Atkinson Hyperlegible Next"],
+            "headline-md": ["Atkinson Hyperlegible Next"],
+            "body-md": ["Atkinson Hyperlegible Next"],
+            "label-lg": ["Atkinson Hyperlegible Next"],
+            "body-lg": ["Atkinson Hyperlegible Next"]
+          },
+          "fontSize": {
+            "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+            "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+            "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+            "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .glass-effect {
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .ghost-overlay {
+      background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(69, 99, 75, 0.05) 5px, rgba(69, 99, 75, 0.05) 10px);
+      border: 2px dashed rgba(69, 99, 75, 0.3);
+    }
+    .pulse-glow {
+      box-shadow: 0 0 0 0 rgba(69, 99, 75, 0.4);
+      animation: pulse-ring 2s infinite;
+    }
+    @keyframes pulse-ring {
+      0% { box-shadow: 0 0 0 0 rgba(69, 99, 75, 0.4); }
+      70% { box-shadow: 0 0 0 10px rgba(69, 99, 75, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(69, 99, 75, 0); }
+    }
+    .active-flow-line {
+      background: linear-gradient(to bottom, #45634b 0%, #45634b 75%, transparent 100%);
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-32 selection:bg-primary/20">
+<!-- Header -->
+<header class="sticky top-0 z-40 bg-surface/80 backdrop-blur-xl px-margin-mobile py-4 border-b border-outline-variant/30">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface">arrow_back</span>
+</button>
+<div>
+<h1 class="font-headline-md text-headline-md text-primary leading-none">Rack B</h1>
+<p class="text-[10px] font-bold text-on-surface-variant uppercase tracking-[0.1em] mt-1">Operational Intelligence</p>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<div class="flex items-center gap-1.5 bg-primary-container/10 px-3 py-1.5 rounded-full border border-primary/20">
+<span class="w-2 h-2 bg-primary rounded-full pulse-glow"></span>
+<span class="text-[10px] font-bold text-primary uppercase tracking-wider">Live Sync</span>
+</div>
+</div>
+</div>
+</header>
+<main class="px-margin-mobile flex flex-col gap-6 pt-6">
+<!-- Digital Twin Hero Visualization (Dominant Bento Item) -->
+<section class="relative aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden bg-[#e0e2db] shadow-2xl flex flex-col items-center justify-center border border-white/50">
+<!-- Immersive Background Elements -->
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-10 left-10 w-32 h-32 bg-primary blur-3xl rounded-full"></div>
+<div class="absolute bottom-10 right-10 w-40 h-40 bg-secondary blur-3xl rounded-full"></div>
+</div>
+<!-- Live Status Label -->
+<div class="absolute top-6 left-6 flex items-center gap-2 glass-effect px-4 py-2 rounded-full">
+<span class="material-symbols-outlined text-[16px] text-primary">data_thresholding</span>
+<span class="text-[10px] font-bold text-on-surface uppercase tracking-widest">Live Digital Twin Syncing</span>
+</div>
+<!-- 3D Rack Representation with Overlay -->
+<div class="relative w-44 h-72 flex flex-col gap-4">
+<!-- Upper Zone -->
+<div class="h-1/3 w-full bg-white/60 rounded-2xl border border-white/80 shadow-lg flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[9px] font-bold text-primary/80">STABLE ZONE</span>
+</div>
+<!-- Middle Zone (The Divergence) -->
+<div class="relative h-1/3 w-full">
+<!-- Real State -->
+<div class="absolute inset-0 bg-secondary-container/40 rounded-2xl border-2 border-secondary/50 shadow-inner flex flex-col items-center justify-center gap-1 z-10">
+<span class="material-symbols-outlined text-secondary animate-pulse">error</span>
+<span class="text-[9px] font-bold text-secondary">DIVERGENCE</span>
+</div>
+<!-- 'Ghost' Optimal Model Overlay -->
+<div class="absolute -top-2 -left-2 -right-2 -bottom-2 ghost-overlay rounded-[1.25rem] opacity-60 z-0 pointer-events-none scale-105">
+<div class="absolute top-0 right-0 p-1">
+<span class="text-[8px] font-bold text-primary uppercase">Target</span>
+</div>
+</div>
+</div>
+<!-- Lower Zone -->
+<div class="h-1/3 w-full bg-white/60 rounded-2xl border border-white/80 shadow-lg flex flex-col items-center justify-center gap-1">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-[9px] font-bold text-primary/80">STABLE ZONE</span>
+</div>
+</div>
+<!-- Confidence Overlay -->
+<div class="absolute bottom-24 left-6 flex flex-col gap-1">
+<div class="glass-effect px-3 py-1.5 rounded-xl">
+<div class="flex items-center gap-2">
+<span class="text-primary font-bold text-label-lg">91%</span>
+<span class="text-[10px] text-on-surface-variant font-bold uppercase tracking-tighter">AI Confidence</span>
+</div>
+<div class="text-[9px] text-on-surface-variant/70 mt-0.5">Live Stream • Growth Model</div>
+</div>
+</div>
+<!-- Expansion UI -->
+<div class="absolute bottom-6 left-6 right-6 p-4 glass-effect rounded-[1.5rem]">
+<div class="flex items-center justify-between">
+<div>
+<span class="text-label-lg font-bold text-on-surface block">Zone B Anomaly</span>
+<span class="text-[12px] text-on-surface-variant">Tap for micro-thermal analysis</span>
+</div>
+<button class="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center active:scale-90 transition-transform shadow-lg">
+<span class="material-symbols-outlined">center_focus_strong</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Metrics Bento Grid -->
+<section class="grid grid-cols-2 gap-4">
+<!-- What Changed Section -->
+<div class="col-span-2 glass-effect p-5 rounded-[2rem] flex items-center justify-between">
+<div>
+<h4 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest mb-3">48h Trend Change</h4>
+<div class="flex gap-4">
+<div class="flex flex-col">
+<span class="text-headline-md text-secondary font-bold">+14%</span>
+<span class="text-[10px] text-on-surface-variant">Humidity Spike</span>
+</div>
+<div class="w-px h-8 bg-outline-variant self-center"></div>
+<div class="flex flex-col">
+<span class="text-headline-md text-error font-bold">-6%</span>
+<span class="text-[10px] text-on-surface-variant">Consistency</span>
+</div>
+</div>
+</div>
+<div class="w-16 h-10 flex items-end gap-1">
+<div class="w-2 h-4 bg-primary/20 rounded-t-sm"></div>
+<div class="w-2 h-6 bg-primary/20 rounded-t-sm"></div>
+<div class="w-2 h-8 bg-primary/20 rounded-t-sm"></div>
+<div class="w-2 h-5 bg-secondary rounded-t-sm animate-pulse"></div>
+</div>
+</div>
+<!-- Comparative Metrics -->
+<div class="p-5 bg-white/60 backdrop-blur-md rounded-[2rem] border border-white flex flex-col gap-2">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-tighter">Live Observed</span>
+<span class="text-headline-lg font-headline-lg text-secondary">72%</span>
+<span class="text-[12px] text-on-surface-variant leading-tight">Growth Rate</span>
+</div>
+<div class="p-5 glass-effect rounded-[2rem] flex flex-col gap-2">
+<span class="text-[10px] font-bold text-primary uppercase tracking-tighter">AI Predicted</span>
+<div class="flex items-baseline gap-1">
+<span class="text-headline-lg font-headline-lg text-primary">84%</span>
+<span class="text-error text-[12px] font-bold">(-12%)</span>
+</div>
+<span class="text-[12px] text-on-surface-variant leading-tight">Optimal Potential</span>
+</div>
+</section>
+<!-- AI Diagnostic Blocks -->
+<section class="flex flex-col gap-4">
+<h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest px-1">AI Diagnostic Profile</h3>
+<div class="grid grid-cols-2 gap-3">
+<div class="p-4 bg-white/40 rounded-2xl border border-white/50">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Root Cause</span>
+<span class="text-label-lg font-bold text-on-surface">Humidity instability</span>
+</div>
+<div class="p-4 bg-white/40 rounded-2xl border border-white/50">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Affected Zone</span>
+<span class="text-label-lg font-bold text-on-surface">Lower-middle (B)</span>
+</div>
+<div class="p-4 bg-white/40 rounded-2xl border border-white/50">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">System Risk</span>
+<span class="text-label-lg font-bold text-secondary">Moderate</span>
+</div>
+<div class="p-4 bg-white/40 rounded-2xl border border-white/50">
+<span class="text-[10px] font-bold text-on-surface-variant uppercase block mb-1">Impact</span>
+<span class="text-label-lg font-bold text-error">2-day delay</span>
+</div>
+</div>
+</section>
+<!-- AI Thinking Flow Timeline -->
+<section class="flex flex-col gap-4">
+<h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Thinking Flow</h3>
+<div class="flex flex-col pl-6 relative gap-8 py-2">
+<div class="absolute left-2.5 top-0 bottom-0 w-0.5 active-flow-line opacity-20"></div>
+<!-- Flow Step 1 -->
+<div class="relative">
+<div class="absolute -left-[20px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col">
+<span class="text-label-lg font-bold text-on-surface">Humidity anomaly detected</span>
+<span class="text-[12px] text-on-surface-variant">Sensor set B-4 reported +14% spike over 4h.</span>
+</div>
+</div>
+<!-- Flow Step 2 -->
+<div class="relative">
+<div class="absolute -left-[20px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col">
+<span class="text-label-lg font-bold text-on-surface">Moisture inconsistency identified</span>
+<span class="text-[12px] text-on-surface-variant">Zone B substrate drying 30% faster than model.</span>
+</div>
+</div>
+<!-- Flow Step 3 -->
+<div class="relative">
+<div class="absolute -left-[20px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col">
+<span class="text-label-lg font-bold text-on-surface">Digital twin divergence detected</span>
+<span class="text-[12px] text-on-surface-variant">Live state vs optimal model mismatch &gt; 10% threshold.</span>
+</div>
+</div>
+<!-- Flow Step 4 -->
+<div class="relative">
+<div class="absolute -left-[20px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20"></div>
+<div class="flex flex-col">
+<span class="text-label-lg font-bold text-on-surface">Yield impact predicted</span>
+<span class="text-[12px] text-on-surface-variant">Simulation projects 8% loss if uncorrected.</span>
+</div>
+</div>
+<!-- Flow Step 5 -->
+<div class="relative">
+<div class="absolute -left-[20px] top-1 w-3 h-3 rounded-full bg-primary ring-4 ring-primary/20 pulse-glow"></div>
+<div class="flex flex-col">
+<span class="text-label-lg font-bold text-primary">Optimization strategy generated</span>
+<span class="text-[12px] text-on-surface-variant">Recommended adaptive irrigation cycle.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Predictive Simulation Card -->
+<section class="p-5 bg-primary-container/20 rounded-[2rem] border border-primary/20 flex gap-4 items-center">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">Timeline</span>
+</div>
+<div class="flex-1">
+<h4 class="text-label-lg font-bold text-on-primary-fixed-variant leading-none mb-1">Adaptive Recovery</h4>
+<p class="text-[13px] text-on-primary-fixed-variant/80">Projected recovery within 36h with adaptive irrigation simulation.</p>
+</div>
+</section>
+<!-- Optimization Actions -->
+<section class="flex flex-col gap-4">
+<h3 class="text-[11px] font-bold text-on-surface-variant uppercase tracking-widest px-1">Recommended Optimization</h3>
+<div class="flex flex-col gap-3">
+<button class="w-full glass-effect p-5 rounded-[1.5rem] flex items-center gap-4 active:scale-[0.98] transition-all border-l-[6px] border-l-primary shadow-sm text-left">
+<div class="p-2 bg-primary/10 rounded-lg text-primary">
+<span class="material-symbols-outlined">water_drop</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-0.5">
+<span class="text-label-lg font-bold text-on-surface">Stabilize moisture in Zone B</span>
+<span class="text-[10px] font-bold text-primary uppercase">98% Match</span>
+</div>
+<span class="text-[12px] text-on-surface-variant">Expected Recovery: <span class="text-primary font-bold">+9% Yield</span></span>
+</div>
+</button>
+<button class="w-full glass-effect p-5 rounded-[1.5rem] flex items-center gap-4 active:scale-[0.98] transition-all border-l-[6px] border-l-secondary shadow-sm text-left">
+<div class="p-2 bg-secondary/10 rounded-lg text-secondary">
+<span class="material-symbols-outlined">air</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-0.5">
+<span class="text-label-lg font-bold text-on-surface">Calibrate cooling airflow</span>
+<span class="text-[10px] font-bold text-on-surface-variant uppercase">82% Match</span>
+</div>
+<span class="text-[12px] text-on-surface-variant">Target: -2.5°C in middle rack zone</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Follow up chips -->
+<section class="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+<button class="whitespace-nowrap px-6 py-3.5 rounded-full glass-effect text-on-surface-variant font-bold text-label-lg active:scale-95 transition-all">
+      Why is growth slowing?
+    </button>
+<button class="whitespace-nowrap px-6 py-3.5 rounded-full glass-effect text-on-surface-variant font-bold text-label-lg active:scale-95 transition-all">
+      Show History
+    </button>
+<button class="whitespace-nowrap px-6 py-3.5 rounded-full glass-effect text-on-surface-variant font-bold text-label-lg active:scale-95 transition-all">
+      Compare Racks
+    </button>
+</section>
+</main>
+<!-- Floating AI Assistant Button -->
+<button class="fixed bottom-24 right-6 group flex items-center gap-2 p-1.5 pr-6 bg-primary text-white rounded-full shadow-2xl z-50 active:scale-90 transition-transform">
+<div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+</div>
+<span class="font-button-text text-label-lg">Ask AI About Rack B</span>
+</button>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-6 pt-3 bg-white/80 backdrop-blur-2xl border-t border-outline-variant/20 rounded-t-[2.5rem]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 px-4 py-2" href="#">
+<span class="material-symbols-outlined text-[28px]">home</span>
+<span class="text-[10px] font-bold uppercase tracking-widest mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary px-4 py-2" href="#">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="text-[10px] font-bold uppercase tracking-widest mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 px-4 py-2" href="#">
+<span class="material-symbols-outlined text-[28px]">center_focus_strong</span>
+<span class="text-[10px] font-bold uppercase tracking-widest mt-1">Scan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant/60 px-4 py-2 relative" href="#">
+<span class="material-symbols-outlined text-[28px]">notifications</span>
+<span class="text-[10px] font-bold uppercase tracking-widest mt-1">Alerts</span>
+<span class="absolute top-2 right-4 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
+</a>
+</nav>
+</body></html>
+
+<!-- Rack B - Operational Intelligence Twin -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FarmPilot AI - Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed-variant": "#633b44",
+                    "error-container": "#ffdad6",
+                    "primary-container": "#5d7c62",
+                    "tertiary-fixed": "#ffd9df",
+                    "surface-bright": "#faf9f5",
+                    "on-secondary-fixed": "#2b160f",
+                    "on-primary-fixed-variant": "#304d36",
+                    "on-background": "#1a1c1a",
+                    "surface-container-lowest": "#ffffff",
+                    "primary": "#45634b",
+                    "surface-variant": "#e3e3df",
+                    "outline-variant": "#c2c8c0",
+                    "background": "#faf9f5",
+                    "on-tertiary-container": "#fffbff",
+                    "on-primary-container": "#f7fff4",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dadad6",
+                    "secondary": "#75584d",
+                    "on-surface-variant": "#424842",
+                    "tertiary": "#7b5059",
+                    "on-tertiary-fixed": "#311119",
+                    "on-secondary-container": "#795c51",
+                    "inverse-on-surface": "#f1f1ed",
+                    "primary-fixed": "#c9ebcc",
+                    "inverse-primary": "#adcfb1",
+                    "on-primary-fixed": "#03210e",
+                    "outline": "#727971",
+                    "tertiary-container": "#966871",
+                    "on-primary": "#ffffff",
+                    "inverse-surface": "#2f312e",
+                    "surface-tint": "#47654d",
+                    "surface": "#faf9f5",
+                    "tertiary-fixed-dim": "#efb8c2",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1a1c1a",
+                    "surface-container-highest": "#e3e3df",
+                    "surface-container": "#eeeeea",
+                    "surface-container-low": "#f4f4f0",
+                    "surface-container-high": "#e9e8e4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "touch-target-min": "56px",
+                    "stack-space": "24px",
+                    "margin-mobile": "20px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Atkinson Hyperlegible Next"],
+                    "body-md": ["Atkinson Hyperlegible Next"],
+                    "label-lg": ["Atkinson Hyperlegible Next"],
+                    "button-text": ["Atkinson Hyperlegible Next"],
+                    "headline-lg": ["Atkinson Hyperlegible Next"],
+                    "body-lg": ["Atkinson Hyperlegible Next"]
+            },
+            "fontSize": {
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ai-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(.33); opacity: 1; }
+            80%, 100% { opacity: 0; }
+        }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Isometric Styles */
+        .isometric-scene {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+        .isometric-rack {
+            transform: rotateX(60deg) rotateZ(-45deg);
+            transform-style: preserve-3d;
+        }
+        .shelf-layer {
+            transition: all 0.3s ease;
+        }
+        .shelf-layer:hover {
+            transform: translateZ(10px);
+        }
+        .glow-green { filter: drop-shadow(0 0 4px rgba(69, 99, 75, 0.6)); }
+        .glow-yellow { filter: drop-shadow(0 0 6px rgba(117, 88, 77, 0.8)); }
+        .glow-red { filter: drop-shadow(0 0 8px rgba(186, 26, 26, 0.6)); }
+    </style>
+<style>
+        body {
+          min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-md shadow-sm flex justify-between items-center px-margin-mobile h-touch-target-min">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">menu</span>
+<div class="flex flex-col">
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">FarmPilot AI</h1>
+<div class="flex items-center gap-1.5">
+<div class="relative flex h-2 w-2">
+<span class="ai-pulse absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface-variant">AI Monitoring 12 Active Racks</span>
+</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">smart_toy</span>
+</header>
+<main class="pt-24 px-margin-mobile space-y-stack-space max-w-2xl mx-auto">
+<!-- Live Farm Status Hero -->
+<section class="bg-surface-container-lowest rounded-xl p-6 shadow-[0_4px_12px_rgba(93,124,98,0.08)] border border-outline-variant/30 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4">
+<div class="flex items-center gap-2 px-3 py-1 bg-primary-fixed text-on-primary-fixed rounded-full">
+<span class="material-symbols-outlined text-[18px]">sync</span>
+<span class="text-xs font-bold">LIVE SYNC</span>
+</div>
+</div>
+<div class="space-y-2">
+<h2 class="font-headline-lg text-headline-lg text-primary">Farm Status: Stable</h2>
+<p class="text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                    AI systems operating normally
+                </p>
+<p class="text-error font-semibold flex items-center gap-2">
+<span class="material-symbols-outlined">warning</span>
+                    2 racks require attention
+                </p>
+</div>
+</section>
+<!-- Redesigned Spatial Overview -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">Spatial Overview</h3>
+<!-- AI Operational Summary -->
+<div class="bg-secondary-container/20 p-4 rounded-xl border border-secondary/10 flex items-start gap-3 backdrop-blur-sm">
+<span class="material-symbols-outlined text-secondary">analytics</span>
+<p class="text-body-md text-on-secondary-container leading-tight">
+                    AI detected instability in <span class="font-bold">Rack B middle shelves</span> due to fluctuating humidity over the last 48 hours.
+                </p>
+</div>
+<div class="bg-surface-container rounded-2xl p-6 aspect-square md:aspect-video flex flex-col items-center justify-center relative overflow-hidden border border-outline-variant/20 shadow-inner">
+<!-- Live Digital Twin Label -->
+<div class="absolute top-4 left-4 z-20 flex items-center gap-2 px-2 py-1 bg-on-surface/5 rounded-md border border-outline-variant/20">
+<span class="flex h-1.5 w-1.5 rounded-full bg-primary ai-pulse"></span>
+<span class="text-[10px] font-bold tracking-widest text-on-surface-variant opacity-70">LIVE DIGITAL TWIN AI MONITORING</span>
+</div>
+<div class="isometric-scene w-full h-full flex items-center justify-center">
+<div class="grid grid-cols-2 gap-x-12 gap-y-16">
+<!-- Rack A (Healthy Stack) -->
+<div class="isometric-rack relative w-24 h-24">
+<!-- Level 3 -->
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[40px] shelf-layer glow-green"></div>
+<!-- Level 2 -->
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[20px] shelf-layer glow-green"></div>
+<!-- Level 1 -->
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 shelf-layer glow-green"></div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 rotate-z-[45deg] rotate-x-[-60deg] whitespace-nowrap">
+<span class="text-[10px] font-bold text-on-surface-variant bg-surface-container-lowest/80 px-1.5 py-0.5 rounded">RACK A</span>
+</div>
+</div>
+<!-- Rack B (Monitoring Stack) -->
+<div class="isometric-rack relative w-24 h-24">
+<!-- Level 3 (Healthy) -->
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[40px] shelf-layer glow-green"></div>
+<!-- Level 2 (Warning Heatmap) -->
+<div class="absolute inset-0 bg-secondary/40 rounded-lg border-2 border-secondary transform translate-z-[20px] shelf-layer animate-pulse glow-yellow ring-4 ring-secondary/20"></div>
+<!-- Level 1 (Healthy) -->
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 shelf-layer glow-green"></div>
+<!-- Context Label for Rack B Level 2 -->
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 rotate-z-[45deg] rotate-x-[-60deg] z-50">
+<div class="bg-surface-container-highest/90 border border-secondary shadow-lg rounded px-2 py-1 flex flex-col items-center">
+<span class="text-[10px] font-black text-secondary">RACK B • LEVEL 2</span>
+<span class="text-[8px] font-bold text-on-surface-variant">Lettuce • Seedling</span>
+</div>
+</div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 rotate-z-[45deg] rotate-x-[-60deg] whitespace-nowrap">
+<span class="text-[10px] font-bold text-secondary bg-secondary-container/80 px-1.5 py-0.5 rounded">RACK B</span>
+</div>
+</div>
+<!-- Rack C (Healthy Stack) -->
+<div class="isometric-rack relative w-24 h-24">
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[40px] shelf-layer glow-green"></div>
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[20px] shelf-layer glow-green"></div>
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 shelf-layer glow-green"></div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 rotate-z-[45deg] rotate-x-[-60deg] whitespace-nowrap">
+<span class="text-[10px] font-bold text-on-surface-variant bg-surface-container-lowest/80 px-1.5 py-0.5 rounded">RACK C</span>
+</div>
+</div>
+<!-- Rack D (Healthy Stack) -->
+<div class="isometric-rack relative w-24 h-24">
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[40px] shelf-layer glow-green"></div>
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 transform translate-z-[20px] shelf-layer glow-green"></div>
+<div class="absolute inset-0 bg-primary/20 rounded-lg border-2 border-primary/40 shelf-layer glow-green"></div>
+<div class="absolute -bottom-8 left-1/2 -translate-x-1/2 rotate-z-[45deg] rotate-x-[-60deg] whitespace-nowrap">
+<span class="text-[10px] font-bold text-on-surface-variant bg-surface-container-lowest/80 px-1.5 py-0.5 rounded">RACK D</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/20 flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary">info</span>
+<p class="text-label-lg text-on-surface-variant">Tap any shelf level for detailed AI sensor analysis.</p>
+</div>
+</section>
+<!-- AI Attention Required -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Attention Required</h3>
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_4px_12px_rgba(117,88,77,0.1)] border-l-4 border-secondary flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div class="flex gap-3">
+<div class="bg-secondary/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-secondary">opacity</span>
+</div>
+<div>
+<h4 class="font-bold text-on-surface">Rack B: Moisture inconsistency</h4>
+<p class="text-on-surface-variant text-sm">Detected 14 mins ago • Confidence 89%</p>
+</div>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-button-text text-button-text h-touch-target-min w-full rounded-xl shadow-md active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">visibility</span>
+                    Inspect Now
+                </button>
+</div>
+</section>
+<!-- Rack Quick Insight Cards -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">Rack Insights</h3>
+<div class="flex gap-gutter overflow-x-auto pb-4 scroll-hide -mx-margin-mobile px-margin-mobile">
+<!-- Card 1 -->
+<div class="flex-shrink-0 w-44 bg-surface-container-lowest rounded-xl p-4 shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-3">
+<span class="font-bold text-primary">RACK A</span>
+<span class="material-symbols-outlined text-primary text-sm">trending_up</span>
+</div>
+<div class="space-y-1 mb-4">
+<p class="text-xs text-on-surface-variant">CROP</p>
+<p class="font-bold">Lettuce</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-on-surface-variant">STAGE</p>
+<p class="font-bold">Seedling</p>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center gap-1">
+<div class="h-8 w-full flex items-end gap-0.5">
+<div class="bg-primary/20 h-2 w-full rounded-t-sm"></div>
+<div class="bg-primary/40 h-3 w-full rounded-t-sm"></div>
+<div class="bg-primary/60 h-5 w-full rounded-t-sm"></div>
+<div class="bg-primary/80 h-4 w-full rounded-t-sm"></div>
+<div class="bg-primary h-6 w-full rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="flex-shrink-0 w-44 bg-surface-container-lowest rounded-xl p-4 shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-3">
+<span class="font-bold text-primary">RACK C</span>
+<span class="material-symbols-outlined text-primary text-sm">trending_up</span>
+</div>
+<div class="space-y-1 mb-4">
+<p class="text-xs text-on-surface-variant">CROP</p>
+<p class="font-bold">Kale</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-on-surface-variant">STAGE</p>
+<p class="font-bold">Growth</p>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center gap-1">
+<div class="h-8 w-full flex items-end gap-0.5">
+<div class="bg-primary/20 h-4 w-full rounded-t-sm"></div>
+<div class="bg-primary/40 h-5 w-full rounded-t-sm"></div>
+<div class="bg-primary/60 h-6 w-full rounded-t-sm"></div>
+<div class="bg-primary/80 h-7 w-full rounded-t-sm"></div>
+<div class="bg-primary h-8 w-full rounded-t-sm"></div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="flex-shrink-0 w-44 bg-surface-container-lowest rounded-xl p-4 shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-start mb-3">
+<span class="font-bold text-primary">RACK D</span>
+<span class="material-symbols-outlined text-primary text-sm">trending_flat</span>
+</div>
+<div class="space-y-1 mb-4">
+<p class="text-xs text-on-surface-variant">CROP</p>
+<p class="font-bold">Basil</p>
+</div>
+<div class="space-y-1">
+<p class="text-xs text-on-surface-variant">STAGE</p>
+<p class="font-bold">Mature</p>
+</div>
+<div class="mt-4 pt-4 border-t border-outline-variant/20 flex items-center gap-1">
+<div class="h-8 w-full flex items-end gap-0.5">
+<div class="bg-primary/80 h-7 w-full rounded-t-sm"></div>
+<div class="bg-primary/80 h-7 w-full rounded-t-sm"></div>
+<div class="bg-primary/80 h-7 w-full rounded-t-sm"></div>
+<div class="bg-primary/80 h-7 w-full rounded-t-sm"></div>
+<div class="bg-primary h-7 w-full rounded-t-sm"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- AI Operational Timeline -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Log</h3>
+<div class="space-y-4">
+<div class="flex gap-4 items-start">
+<div class="flex flex-col items-center">
+<div class="bg-primary/10 p-2 rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[20px]">water_drop</span>
+</div>
+<div class="w-0.5 h-10 bg-outline-variant/30 mt-2"></div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 flex-1">
+<p class="font-bold text-on-surface">AI stabilized irrigation in Rack B</p>
+<p class="text-on-surface-variant text-xs">Today • 10:45 AM</p>
+</div>
+</div>
+<div class="flex gap-4 items-start">
+<div class="flex flex-col items-center">
+<div class="bg-primary/10 p-2 rounded-full border border-primary/20">
+<span class="material-symbols-outlined text-primary text-[20px]">light_mode</span>
+</div>
+<div class="w-0.5 h-10 bg-outline-variant/30 mt-2"></div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-4 flex-1">
+<p class="font-bold text-on-surface">Lighting adjusted in Rack C</p>
+<p class="text-on-surface-variant text-xs">Today • 09:12 AM</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick AI Actions -->
+<section class="space-y-4">
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Toolbox</h3>
+<div class="grid grid-cols-1 gap-3">
+<button class="flex items-center gap-4 bg-surface-container-high p-4 rounded-xl text-left border border-outline-variant/30 hover:bg-surface-container-highest transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-primary p-2 bg-on-primary rounded-lg shadow-sm">auto_awesome</span>
+<div>
+<p class="font-bold text-on-surface">Enable Auto Optimization</p>
+<p class="text-xs text-on-surface-variant">AI manages all cycles 24/7</p>
+</div>
+</button>
+<button class="flex items-center gap-4 bg-surface-container-high p-4 rounded-xl text-left border border-outline-variant/30 hover:bg-surface-container-highest transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-primary p-2 bg-on-primary rounded-lg shadow-sm">view_in_ar</span>
+<div>
+<p class="font-bold text-on-surface">Open AR Scan</p>
+<p class="text-xs text-on-surface-variant">Real-time thermal overlays</p>
+</div>
+</button>
+<button class="flex items-center gap-4 bg-surface-container-high p-4 rounded-xl text-left border border-outline-variant/30 hover:bg-surface-container-highest transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined text-primary p-2 bg-on-primary rounded-lg shadow-sm">forum</span>
+<div>
+<p class="font-bold text-on-surface">Ask AI Assistant</p>
+<p class="text-xs text-on-surface-variant">Troubleshoot &amp; planning</p>
+</div>
+</button>
+</div>
+</section>
+</main>
+<!-- FAB -->
+<button class="fixed bottom-24 right-margin-mobile bg-primary-container text-on-primary-container p-4 rounded-full shadow-lg flex items-center gap-2 active:scale-95 duration-150 z-40">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="font-label-lg pr-2">Ask FarmPilot AI</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface-container/95 dark:bg-surface-container-lowest/95 backdrop-blur-lg shadow-[0_-4px_12px_rgba(93,124,98,0.08)] flex justify-around items-center px-2 py-3 pb-safe rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1.5 transition-all">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dash</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-label-lg text-label-lg">Scan</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-lg text-label-lg">AI</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="font-label-lg text-label-lg">Alerts</span>
+</div>
+</nav>
+</body></html>
+
+<!-- Farm Overview - Vertical Digital Twin -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FarmPilot AI Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Atkinson Hyperlegible Next', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#fffbff",
+                        "inverse-on-surface": "#f1f1ed",
+                        "on-tertiary-fixed": "#311119",
+                        "surface-variant": "#e3e3df",
+                        "surface-dim": "#dadad6",
+                        "on-primary-container": "#f7fff4",
+                        "secondary": "#75584d",
+                        "tertiary-fixed": "#ffd9df",
+                        "on-tertiary": "#ffffff",
+                        "on-surface": "#1a1c1a",
+                        "primary-fixed-dim": "#adcfb1",
+                        "background": "#faf9f5",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#966871",
+                        "on-secondary-container": "#795c51",
+                        "on-secondary-fixed": "#2b160f",
+                        "secondary-fixed-dim": "#e4beb2",
+                        "secondary-fixed": "#ffdbce",
+                        "on-primary": "#ffffff",
+                        "on-surface-variant": "#424842",
+                        "tertiary": "#7b5059",
+                        "outline-variant": "#c2c8c0",
+                        "primary-fixed": "#c9ebcc",
+                        "inverse-surface": "#2f312e",
+                        "on-secondary-fixed-variant": "#5b4137",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#03210e",
+                        "on-background": "#1a1c1a",
+                        "primary": "#45634b",
+                        "surface-tint": "#47654d",
+                        "surface-container-highest": "#e3e3df",
+                        "on-error": "#ffffff",
+                        "surface": "#faf9f5",
+                        "primary-container": "#5d7c62",
+                        "surface-container-high": "#e9e8e4",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#efb8c2",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#adcfb1",
+                        "secondary-container": "#fed7ca",
+                        "on-tertiary-fixed-variant": "#633b44",
+                        "outline": "#727971",
+                        "on-primary-fixed-variant": "#304d36",
+                        "surface-bright": "#faf9f5",
+                        "surface-container": "#eeeeea",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f4f4f0"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "gutter": "16px",
+                        "touch-target-min": "56px",
+                        "stack-space": "24px"
+                    },
+                    "fontFamily": {
+                        "button-text": ["Atkinson Hyperlegible Next"],
+                        "label-lg": ["Atkinson Hyperlegible Next"],
+                        "body-lg": ["Atkinson Hyperlegible Next"],
+                        "headline-md": ["Atkinson Hyperlegible Next"],
+                        "body-md": ["Atkinson Hyperlegible Next"],
+                        "headline-lg": ["Atkinson Hyperlegible Next"]
+                    },
+                    "fontSize": {
+                        "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim docked full-width top-0 z-40">
+<div class="flex justify-between items-center w-full px-margin-mobile py-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJH-2aqRMgwvVOyQKNZ2zIgo4FZaVMpjwfqb_fHsPVLZQEE4-sfX6bI8V6-Q0_nhBTE1R0tDpc0TKciZPrMeBza2NvgwRX5ys6OA4eBLz2WDXNjpQAE7OuBB738aZ3vEHha-rpi1Z2NnLZMoQJ2dz808Sk_Tv1MR14ZATDu1_nEea-XYiEf-7eO1MoRumh3OK5VNsflgFUYh68r6fLa3fSMvFqzKaynlj8lr8yCWOlokxxkhkkNbpJIl33aHx-sdobiGHIBKxq0C_R"/>
+</div>
+<h1 class="text-headline-lg font-headline-lg font-bold text-primary dark:text-inverse-primary">FarmPilot AI</h1>
+</div>
+<button class="w-touch-target-min h-touch-target-min flex items-center justify-center text-primary dark:text-inverse-primary hover:bg-surface-container-high transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Chat Canvas -->
+<main class="flex-grow px-margin-mobile pt-stack-space pb-40 overflow-y-auto max-w-2xl mx-auto w-full">
+<!-- Day Divider -->
+<div class="flex justify-center mb-stack-space">
+<span class="bg-surface-container text-on-surface-variant text-label-lg font-label-lg px-4 py-1 rounded-full">Today</span>
+</div>
+<!-- Conversation History -->
+<div class="space-y-stack-space">
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="bg-primary-container text-on-primary-container rounded-2xl rounded-tr-none p-4 max-w-[85%] shadow-[0_4px_12px_rgba(93,124,98,0.12)]">
+<p class="text-body-md font-body-md">How is Rack B today?</p>
+<span class="text-xs opacity-70 mt-1 block text-right">09:41 AM</span>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex justify-start">
+<div class="flex gap-3 max-w-[90%]">
+<div class="w-10 h-10 rounded-xl bg-secondary flex-shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+</div>
+<div class="space-y-4">
+<div class="bg-surface-container-lowest text-on-surface rounded-2xl rounded-tl-none p-4 shadow-[0_4px_20px_rgba(93,124,98,0.08)] border-2 border-primary/10">
+<p class="text-body-md font-body-md">Rack B moisture is below optimal range. Irrigation has been activated safely for 30 seconds.</p>
+<span class="text-xs text-on-surface-variant mt-1 block">09:41 AM</span>
+</div>
+<!-- AI Explanation Card -->
+<div class="bg-surface-container-low rounded-xl border-l-4 border-primary p-4 shadow-sm">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">info</span>
+<span class="text-label-lg font-label-lg">Why did this happen?</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant">The sensors detected a 12% drop in substrate humidity over the last 4 hours due to high ambient temperature (28°C). A short burst of water prevents root stress without over-saturating the drainage system.</p>
+<div class="mt-4">
+<img class="w-full h-32 object-cover rounded-lg" data-alt="A macro photograph of a precision irrigation nozzle spraying a fine, misty veil of water over lush green lettuce leaves in a modern hydroponic farm. The lighting is soft and natural, emphasizing the vibrant green hues and crystalline water droplets. The overall atmosphere is clean, professional, and technologically advanced, echoing a sustainable agricultural vision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOSyQGSVd71PGFXQR6q8JtEW5hzK6womgNTw9YUstgL-5_8x78nuP955mQdZNzttGfN78BuppEziLQKb86Y6uyP6xj6-1x_AkFyDWlAaGSFHhd46kp0rPIrrJZH1lep9kjfbmBwAk8y6RoWClg5lu1BQY139-VECgZHqy08kudfoKVPTCLGVeHoDAdbvIWiMpGJGyYwxwA3W9NCUa5qgZzp0ACsKQIB1cAmov-n7FAQc7SnPwoGzFCNKjKuq-saZ4151BawJb1MF_2"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Suggested Prompts -->
+<div class="flex flex-col items-center gap-3 pt-4">
+<p class="text-on-surface-variant text-label-lg font-label-lg">Suggestions</p>
+<div class="flex flex-wrap justify-center gap-2">
+<button class="bg-surface-container-highest hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant px-4 py-2 rounded-full border border-outline-variant transition-all text-label-lg font-label-lg active:scale-95">
+                        Diagnosis plant health
+                    </button>
+<button class="bg-surface-container-highest hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant px-4 py-2 rounded-full border border-outline-variant transition-all text-label-lg font-label-lg active:scale-95">
+                        How to grow basil better?
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Interactive Input Zone -->
+<div class="fixed bottom-0 left-0 w-full z-50 px-margin-mobile pb-24 pt-4 bg-gradient-to-t from-background via-background to-transparent">
+<div class="max-w-2xl mx-auto"><div class="bg-surface-container-lowest rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.08)] border border-outline-variant p-2 flex items-center gap-2">
+<!-- Upload/Camera Action -->
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full" title="Add Attachment">
+<span class="material-symbols-outlined text-[24px]">add_circle</span>
+</button>
+<!-- Text Input Field -->
+<div class="flex-grow min-w-0">
+<input class="w-full bg-transparent border-none focus:ring-0 text-body-md font-body-md text-on-surface placeholder:text-on-surface-variant px-1" placeholder="Ask FarmPilot AI..." type="text"/>
+</div>
+<div class="flex items-center gap-1.5">
+<!-- Voice Record Button -->
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full" title="Record Voice">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+</button>
+<!-- Send Button -->
+<button class="w-10 h-10 bg-primary text-on-primary flex items-center justify-center rounded-full shadow-sm hover:opacity-90 active:scale-90 transition-all" title="Send Message">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div></div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-4 pt-2 bg-surface-container-lowest dark:bg-surface-container-low rounded-t-xl shadow-lg">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-label-lg font-label-lg">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="text-label-lg font-label-lg">Scan</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-2 active:scale-90 duration-200 shadow-sm">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+<span class="text-label-lg font-label-lg">Assistant</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all active:scale-90 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-label-lg font-label-lg">Alerts</span>
+</button>
+</nav>
+</body></html>
+
+<!-- AI Assistant - Chat Input Update -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Event Confirmation - FarmPilot AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface": "#faf9f5",
+                    "on-secondary-fixed": "#2b160f",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#ffdbce",
+                    "primary-fixed-dim": "#adcfb1",
+                    "surface-tint": "#47654d",
+                    "surface-container-high": "#e9e8e4",
+                    "primary-fixed": "#c9ebcc",
+                    "tertiary-fixed": "#ffd9df",
+                    "outline-variant": "#c2c8c0",
+                    "on-primary-fixed": "#03210e",
+                    "background": "#faf9f5",
+                    "surface-dim": "#dadad6",
+                    "inverse-on-surface": "#f1f1ed",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "primary": "#45634b",
+                    "on-secondary-container": "#795c51",
+                    "tertiary": "#7b5059",
+                    "secondary-container": "#fed7ca",
+                    "on-tertiary-fixed": "#311119",
+                    "tertiary-container": "#966871",
+                    "on-tertiary-fixed-variant": "#633b44",
+                    "surface-variant": "#e3e3df",
+                    "surface-container": "#eeeeea",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#424842",
+                    "surface-bright": "#faf9f5",
+                    "on-surface": "#1a1c1a",
+                    "secondary": "#75584d",
+                    "primary-container": "#5d7c62",
+                    "on-primary-fixed-variant": "#304d36",
+                    "error": "#ba1a1a",
+                    "surface-container-highest": "#e3e3df",
+                    "outline": "#727971",
+                    "inverse-surface": "#2f312e",
+                    "secondary-fixed-dim": "#e4beb2",
+                    "on-error": "#ffffff",
+                    "on-tertiary-container": "#fffbff",
+                    "inverse-primary": "#adcfb1",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "on-background": "#1a1c1a",
+                    "tertiary-fixed-dim": "#efb8c2",
+                    "on-primary-container": "#f7fff4",
+                    "on-secondary-fixed-variant": "#5b4137",
+                    "surface-container-low": "#f4f4f0",
+                    "google-blue": "#1a73e8"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-space": "24px",
+                    "touch-target-min": "56px",
+                    "margin-mobile": "20px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Atkinson Hyperlegible Next"],
+                    "label-lg": ["Atkinson Hyperlegible Next"],
+                    "headline-lg": ["Atkinson Hyperlegible Next"],
+                    "body-md": ["Atkinson Hyperlegible Next"],
+                    "button-text": ["Atkinson Hyperlegible Next"],
+                    "body-lg": ["Atkinson Hyperlegible Next"]
+            },
+            "fontSize": {
+                    "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                    "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                    "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            user-select: none;
+        }
+        body {
+            font-family: 'Atkinson Hyperlegible Next', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="bg-surface dark:bg-surface-dim flex justify-between items-center w-full px-margin-mobile py-4 sticky top-0 z-10">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">close</span>
+<span class="text-headline-md font-headline-md text-primary">FarmPilot AI</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">share</span>
+<span class="material-symbols-outlined text-on-surface-variant">more_vert</span>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center px-margin-mobile py-6 max-w-md mx-auto w-full">
+<!-- Confirmation Hero -->
+<div class="w-full flex flex-col items-center text-center mb-stack-space">
+<div class="w-20 h-20 bg-google-blue rounded-full flex items-center justify-center mb-4 shadow-lg">
+<span class="material-symbols-outlined text-white text-5xl" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Event saved</h1>
+<p class="text-body-md font-body-md text-on-surface-variant">The harvest reminder has been added to your calendar.</p>
+</div>
+<!-- Google Calendar Styled Card -->
+<div class="w-full bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(93,124,98,0.08)] overflow-hidden">
+<div class="h-2 bg-google-blue w-full"></div>
+<div class="p-6 space-y-6">
+<!-- Event Header -->
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-google-blue mt-1" style="font-variation-settings: 'FILL' 1;">event</span>
+<div>
+<h2 class="text-headline-md font-headline-md leading-tight text-on-surface">🥬 Harvest: Rack B Lettuce</h2>
+<p class="text-body-md font-body-md text-on-surface mt-1">Thursday, Oct 26 • 9:00 – 10:00 AM</p>
+</div>
+</div>
+<!-- Divider -->
+<div class="h-px bg-surface-variant w-full"></div>
+<!-- Calendar Info -->
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
+<div class="flex flex-col">
+<span class="text-label-lg font-label-lg text-on-surface-variant">Calendar</span>
+<span class="text-body-md font-body-md text-on-surface">FarmPilot AI Reminders</span>
+</div>
+</div>
+<!-- Notifications -->
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant">notifications_active</span>
+<div class="flex flex-col">
+<span class="text-label-lg font-label-lg text-on-surface-variant">Notification</span>
+<span class="text-body-md font-body-md text-on-surface">1 day before at 9:00 AM</span>
+</div>
+</div>
+<!-- Description -->
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-on-surface-variant mt-1">description</span>
+<div class="flex flex-col">
+<span class="text-label-lg font-label-lg text-on-surface-variant">Description</span>
+<p class="text-body-md font-body-md text-on-surface mt-1 italic">
+                            "AI-predicted optimal harvest window for Rack B Level 2 Seedlings."
+                        </p>
+</div>
+</div>
+</div>
+<!-- Visualization Image -->
+<div class="relative w-full h-48">
+<img alt="Hydroponic lettuce racks" class="w-full h-full object-cover" data-alt="A lush and vibrant hydroponic indoor farm with glowing LED growth lights illuminating multiple tiers of crisp, green lettuce in Rack B. The scene is bright and technologically advanced, with a clean, light-mode aesthetic emphasizing agricultural precision and high-contrast organic growth. Soft, diffuse lighting creates a professional yet comforting atmosphere of sustainable digital stewardship." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL9K9pQHy3OjFca6Oq0Vn-3iAY9zut5wkNouLIkRSFmFNNJ450YtE4LX1-6_htRJAjtqNJaoaUiCC444fLTxwZ7XA4msl6598TKyrzDaC60dgnxE9pDOMkNdM98o-38G0cYGJ4P_DFJAWhjf-Ah0W3ZQyzK_NOXo_aDHItuwhrsWGX_RCJruGl8H5XFGPqSK-dUsGX3AlikN-3qlqiyca5XXfgtn4qzaVsO9gXf-DBDAXABTfLyOA_w4_Ic0LfToFIOWaTHRUnSzNw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute bottom-4 left-6 flex items-center gap-2">
+<span class="bg-primary text-on-primary text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">Rack B Status: Ready</span>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="w-full mt-stack-space space-y-4">
+<button class="w-full h-touch-target-min bg-google-blue hover:bg-blue-700 text-white rounded-full flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md">
+<span class="material-symbols-outlined">open_in_new</span>
+<span class="font-button-text text-button-text">Open in Calendar</span>
+</button>
+<button class="w-full h-touch-target-min bg-surface-container-high hover:bg-surface-variant text-on-surface rounded-full flex items-center justify-center transition-all active:scale-95">
+<span class="font-button-text text-button-text">Done</span>
+</button>
+</div>
+<!-- Help Link -->
+<div class="mt-8 flex items-center gap-2 text-on-surface-variant opacity-70">
+<span class="material-symbols-outlined text-sm">info</span>
+<span class="text-label-lg font-label-lg">Connected via Google Workspace</span>
+</div>
+</main>
+<!-- Navigation suppressed for transactional focus -->
+</body></html>
+
+<!-- Google Calendar - Harvest Reminder -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed-dim": "#adcfb1",
+            "on-primary": "#ffffff",
+            "error-container": "#ffdad6",
+            "outline-variant": "#c2c8c0",
+            "surface-container-high": "#e9e8e4",
+            "tertiary-fixed": "#ffd9df",
+            "primary-container": "#5d7c62",
+            "primary-fixed": "#c9ebcc",
+            "inverse-on-surface": "#f1f1ed",
+            "on-error": "#ffffff",
+            "on-primary-fixed": "#03210e",
+            "on-background": "#1a1c1a",
+            "surface-container": "#eeeeea",
+            "secondary-fixed": "#ffdbce",
+            "on-tertiary-fixed": "#311119",
+            "background": "#faf9f5",
+            "on-surface": "#1a1c1a",
+            "surface-variant": "#e3e3df",
+            "tertiary": "#7b5059",
+            "on-tertiary-container": "#fffbff",
+            "secondary-container": "#fed7ca",
+            "on-tertiary": "#ffffff",
+            "surface-dim": "#dadad6",
+            "on-secondary-fixed-variant": "#5b4137",
+            "surface-container-low": "#f4f4f0",
+            "on-primary-fixed-variant": "#304d36",
+            "tertiary-container": "#966871",
+            "secondary-fixed-dim": "#e4beb2",
+            "on-secondary-fixed": "#2b160f",
+            "on-primary-container": "#f7fff4",
+            "inverse-surface": "#2f312e",
+            "on-secondary-container": "#795c51",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed-dim": "#efb8c2",
+            "surface-container-lowest": "#ffffff",
+            "secondary": "#75584d",
+            "inverse-primary": "#adcfb1",
+            "error": "#ba1a1a",
+            "surface-container-highest": "#e3e3df",
+            "surface-tint": "#47654d",
+            "on-surface-variant": "#424842",
+            "on-tertiary-fixed-variant": "#633b44",
+            "surface-bright": "#faf9f5",
+            "surface": "#faf9f5",
+            "outline": "#727971",
+            "primary": "#45634b",
+            "on-error-container": "#93000a"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "touch-target-min": "56px",
+            "margin-mobile": "20px",
+            "stack-space": "24px",
+            "gutter": "16px"
+          },
+          "fontFamily": {
+            "body-md": ["Atkinson Hyperlegible Next"],
+            "headline-lg": ["Atkinson Hyperlegible Next"],
+            "headline-md": ["Atkinson Hyperlegible Next"],
+            "label-lg": ["Atkinson Hyperlegible Next"],
+            "button-text": ["Atkinson Hyperlegible Next"],
+            "body-lg": ["Atkinson Hyperlegible Next"]
+          },
+          "fontSize": {
+            "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+            "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+            "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+            "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+            "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+            "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body { font-family: 'Atkinson Hyperlegible Next', sans-serif; }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #c2c8c0; border-radius: 10px; }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface flex h-screen overflow-hidden">
+<!-- Conversation History Drawer (Sidebar) -->
+<aside class="hidden md:flex flex-col w-80 bg-surface-container-low border-r border-outline-variant/30 h-full">
+<div class="p-4 space-y-4">
+<!-- New Chat Button -->
+<button class="w-full h-[56px] flex items-center justify-center gap-3 bg-primary-fixed text-on-primary-fixed rounded-xl font-button-text text-button-text shadow-sm hover:brightness-95 transition-all group overflow-hidden relative">
+<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+<span class="material-symbols-outlined">add</span>
+        New Chat
+      </button>
+<!-- Search Bar -->
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-lowest border-2 border-outline-variant rounded-xl pl-12 pr-4 py-3 text-label-lg font-label-lg focus:outline-none focus:border-primary transition-colors" placeholder="Search past discussions..." type="text"/>
+</div>
+</div>
+<!-- History List -->
+<nav class="flex-1 overflow-y-auto px-4 pb-20 custom-scrollbar">
+<div class="space-y-6">
+<!-- Today Group -->
+<section>
+<h3 class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider mb-2 px-2">Today</h3>
+<div class="space-y-1">
+<button class="w-full text-left p-3 rounded-xl bg-surface-container-highest transition-colors flex items-start gap-3">
+<div class="mt-1 flex-shrink-0 w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[20px]">water_drop</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Rack B Moisture Instability</p>
+<p class="text-sm text-on-surface-variant truncate">AI detected irrigation delay in...</p>
+<span class="text-[12px] text-on-surface-variant/70">10:42 AM</span>
+</div>
+</button>
+<button class="w-full text-left p-3 rounded-xl hover:bg-surface-container-high transition-colors flex items-start gap-3">
+<div class="mt-1 flex-shrink-0 w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">psychology_alt</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Lettuce Harvest Optimization</p>
+<p class="text-sm text-on-surface-variant truncate">Predicted yield increase by 12%...</p>
+<span class="text-[12px] text-on-surface-variant/70">8:15 AM</span>
+</div>
+</button>
+</div>
+</section>
+<!-- Yesterday Group -->
+<section>
+<h3 class="text-label-lg font-label-lg text-on-surface-variant uppercase tracking-wider mb-2 px-2">Yesterday</h3>
+<div class="space-y-1">
+<button class="w-full text-left p-3 rounded-xl hover:bg-surface-container-high transition-colors flex items-start gap-3">
+<div class="mt-1 flex-shrink-0 w-8 h-8 rounded-lg bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">eco</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">Pest Detection on Basil</p>
+<p class="text-sm text-on-surface-variant truncate">Spotted spider mite signs on...</p>
+<span class="text-[12px] text-on-surface-variant/70">Yesterday</span>
+</div>
+</button>
+</div>
+</section>
+</div>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full relative">
+<!-- Top Bar -->
+<header class="flex justify-between items-center w-full px-margin-mobile py-4 bg-surface dark:bg-surface-dim z-30">
+<div class="flex items-center gap-3">
+<button class="md:hidden p-2 rounded-lg hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="text-headline-lg font-headline-lg font-bold text-primary dark:text-inverse-primary">FarmPilot AI</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="User" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a mature farmer with a kind smile, set against a softly blurred rural background with warm morning sunlight. The image is captured in high detail, conveying experience and trustworthiness, following a naturalistic and approachable aesthetic that fits the agricultural stewardship theme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-3gvVtQ5gPaAb4Ucyvurn03B4ACCGG9C8XcuLMQKW9KVy__nKUIAFGHiPUZa-tcgW3roAPfBfaPbRgW-HJy2PuW_RPVQZNPQHuwxgYdqLGG63FTwh5wcgFiQJ5qki-e8SCWN9jGjiQw4RyjCvU30VkidG58pmoVnbDrx6U6bV81kiIG6Cdqkpc9b5qhLDNo2ryGAO9c84DFxZlY1Z1dF839m8uR1oxaLRs8a2wUyluPBKRafYDMxjR_ngUzPJzjgIsVokT5gCzAFG"/>
+</div>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Chat Messages / Empty State -->
+<div class="flex-1 overflow-y-auto px-margin-mobile pb-32 pt-8 custom-scrollbar">
+<div class="max-w-3xl mx-auto space-y-stack-space">
+<!-- Welcome View -->
+<div class="text-center py-12 space-y-6">
+<div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-primary-fixed text-on-primary-fixed-variant mb-4">
+<span class="material-symbols-outlined text-[48px]">psychology_alt</span>
+</div>
+<div>
+<h1 class="text-headline-lg font-headline-lg text-on-surface mb-2">Welcome, Shepherd</h1>
+<p class="text-body-lg font-body-lg text-on-surface-variant">How can I help you manage your farm today?</p>
+</div>
+<!-- Suggested Prompts Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12 text-left">
+<button class="p-5 bg-surface-container-lowest border-2 border-outline-variant/30 rounded-2xl hover:border-primary transition-all group flex items-center justify-between shadow-sm">
+<div class="space-y-1">
+<p class="font-label-lg text-label-lg text-on-surface">How is Rack B today?</p>
+<p class="text-sm text-on-surface-variant">Status check for hydroponics system</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</button>
+<button class="p-5 bg-surface-container-lowest border-2 border-outline-variant/30 rounded-2xl hover:border-primary transition-all group flex items-center justify-between shadow-sm">
+<div class="space-y-1">
+<p class="font-label-lg text-label-lg text-on-surface">Predict lettuce harvest</p>
+<p class="text-sm text-on-surface-variant">Calculate optimal picking window</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</button>
+<button class="p-5 bg-surface-container-lowest border-2 border-outline-variant/30 rounded-2xl hover:border-primary transition-all group flex items-center justify-between shadow-sm">
+<div class="space-y-1">
+<p class="font-label-lg text-label-lg text-on-surface">Diagnose plant damage</p>
+<p class="text-sm text-on-surface-variant">AI-powered leaf spot analysis</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</button>
+<button class="p-5 bg-surface-container-lowest border-2 border-outline-variant/30 rounded-2xl hover:border-primary transition-all group flex items-center justify-between shadow-sm">
+<div class="space-y-1">
+<p class="font-label-lg text-label-lg text-on-surface">Optimize humidity</p>
+<p class="text-sm text-on-surface-variant">Adjust stability parameters</p>
+</div>
+<span class="material-symbols-outlined text-primary opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Input Bar -->
+<div class="absolute bottom-0 left-0 w-full p-margin-mobile bg-gradient-to-t from-background via-background/95 to-transparent pt-10">
+<div class="max-w-3xl mx-auto">
+<div class="relative bg-surface-container-lowest border-2 border-outline-variant rounded-[28px] p-2 flex items-end gap-2 shadow-lg focus-within:border-primary transition-all">
+<button class="w-[48px] h-[48px] rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined">add</span>
+</button>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 text-body-md font-body-md py-3 px-2 resize-none max-h-48 custom-scrollbar min-h-[48px]" placeholder="Ask FarmPilot AI..." rows="1"></textarea>
+<div class="flex items-center gap-1 shrink-0">
+<button class="w-[48px] h-[48px] rounded-full flex items-center justify-center hover:bg-surface-container-high transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="w-[48px] h-[48px] rounded-full flex items-center justify-center bg-primary text-on-primary shadow-sm hover:brightness-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+<p class="text-center text-[12px] text-on-surface-variant mt-3 px-4">FarmPilot AI can make mistakes. Verify critical irrigation schedules with manual checks.</p>
+</div>
+</div>
+</main>
+<!-- Mobile Navigation Shell (BottomNavBar Logic) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-4 pt-2 bg-surface-container-lowest shadow-[0_-4px_20px_rgba(93,124,98,0.08)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-label-lg font-label-lg">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-2 active:scale-90 duration-200">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+<span class="text-label-lg font-label-lg">Assistant</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-label-lg font-label-lg">Alerts</span>
+</button>
+</nav>
+</body></html>
+
+<!-- AI Assistant - Conversational Workspace -->
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>FarmPilot AI Assistant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 600, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Atkinson Hyperlegible Next', sans-serif;
+            min-height: max(884px, 100dvh);
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.95); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#311119",
+                        "on-tertiary-container": "#fffbff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#ffd9df",
+                        "tertiary": "#7b5059",
+                        "on-primary-container": "#f7fff4",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-surface": "#2f312e",
+                        "on-background": "#1a1c1a",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#adcfb1",
+                        "background": "#faf9f5",
+                        "on-tertiary-fixed-variant": "#633b44",
+                        "on-error": "#ffffff",
+                        "primary": "#45634b",
+                        "secondary-container": "#fed7ca",
+                        "on-primary-fixed-variant": "#304d36",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed": "#ffdbce",
+                        "inverse-on-surface": "#f1f1ed",
+                        "on-surface": "#1a1c1a",
+                        "secondary": "#75584d",
+                        "on-surface-variant": "#424842",
+                        "primary-container": "#5d7c62",
+                        "on-secondary-fixed": "#2b160f",
+                        "surface-container-low": "#f4f4f0",
+                        "outline-variant": "#c2c8c0",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#dadad6",
+                        "surface": "#faf9f5",
+                        "on-secondary-container": "#795c51",
+                        "tertiary-container": "#966871",
+                        "primary-fixed": "#c9ebcc",
+                        "surface-tint": "#47654d",
+                        "tertiary-fixed-dim": "#efb8c2",
+                        "surface-container-highest": "#e3e3df",
+                        "surface-container-high": "#e9e8e4",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed-dim": "#adcfb1",
+                        "surface-variant": "#e3e3df",
+                        "secondary-fixed-dim": "#e4beb2",
+                        "surface-bright": "#faf9f5",
+                        "on-secondary-fixed-variant": "#5b4137",
+                        "outline": "#727971",
+                        "surface-container": "#eeeeea",
+                        "on-primary-fixed": "#03210e"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "touch-target-min": "56px",
+                        "gutter": "16px",
+                        "stack-space": "24px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Atkinson Hyperlegible Next"],
+                        "body-md": ["Atkinson Hyperlegible Next"],
+                        "button-text": ["Atkinson Hyperlegible Next"],
+                        "headline-md": ["Atkinson Hyperlegible Next"],
+                        "body-lg": ["Atkinson Hyperlegible Next"],
+                        "headline-lg": ["Atkinson Hyperlegible Next"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                        "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}],
+                        "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim sticky top-0 z-40 border-b border-outline-variant/30">
+<div class="flex justify-between items-center w-full px-margin-mobile py-3">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border-2 border-surface">
+<img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJH-2aqRMgwvVOyQKNZ2zIgo4FZaVMpjwfqb_fHsPVLZQEE4-sfX6bI8V6-Q0_nhBTE1R0tDpc0TKciZPrMeBza2NvgwRX5ys6OA4eBLz2WDXNjpQAE7OuBB738aZ3vEHha-rpi1Z2NnLZMoQJ2dz808Sk_Tv1MR14ZATDu1_nEea-XYiEf-7eO1MoRumh3OK5VNsflgFUYh68r6fLa3fSMvFqzKaynlj8lr8yCWOlokxxkhkkNbpJIl33aHx-sdobiGHIBKxq0C_R"/>
+</div>
+<div>
+<h1 class="text-headline-md font-bold text-primary leading-tight">FarmPilot AI</h1>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse-soft"></span>
+<span class="text-[12px] font-label-lg text-primary tracking-wide uppercase">AI Active</span>
+</div>
+</div>
+</div>
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full active:scale-95">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Chat Canvas -->
+<main class="flex-grow px-margin-mobile pt-6 pb-48 overflow-y-auto max-w-2xl mx-auto w-full">
+<!-- Day Divider -->
+<div class="flex justify-center mb-8">
+<span class="bg-surface-container text-on-surface-variant text-label-lg font-label-lg px-4 py-1 rounded-full border border-outline-variant/20">Today</span>
+</div>
+<div class="space-y-8">
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="bg-primary-container text-on-primary-container rounded-2xl rounded-tr-none p-4 max-w-[85%] shadow-sm">
+<p class="text-body-md">How is Rack B today?</p>
+<span class="text-[11px] opacity-70 mt-1 block text-right">09:41 AM</span>
+</div>
+</div>
+<!-- AI Thinking Workflow -->
+<div class="flex justify-start">
+<div class="flex gap-3 max-w-[90%]">
+<div class="w-10 h-10 rounded-xl bg-secondary flex-shrink-0 flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-secondary" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+</div>
+<div class="bg-surface-container-low rounded-2xl p-4 border border-outline-variant/30 w-full">
+<div class="flex items-center gap-2 text-primary mb-2">
+<div class="flex gap-1">
+<span class="w-1 h-1 bg-primary rounded-full animate-bounce"></span>
+<span class="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:0.2s]"></span>
+<span class="w-1 h-1 bg-primary rounded-full animate-bounce [animation-delay:0.4s]"></span>
+</div>
+<span class="text-label-lg font-bold">Reasoning...</span>
+</div>
+<ul class="text-[14px] text-on-surface-variant space-y-1.5 font-label-lg">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check_circle</span> Checking environmental history...</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">check_circle</span> Reviewing irrigation data...</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">query_stats</span> Analyzing sensor patterns...</li>
+</ul>
+</div>
+</div>
+</div>
+<!-- AI Response -->
+<div class="flex justify-start">
+<div class="flex gap-3 max-w-[90%]">
+<div class="w-10 h-10 invisible flex-shrink-0"></div>
+<div class="space-y-4 w-full">
+<div class="bg-surface-container-lowest text-on-surface rounded-2xl rounded-tl-none p-4 shadow-sm border border-primary/10">
+<p class="text-body-md">Rack B moisture is below optimal range. Irrigation has been activated safely for 30 seconds.</p>
+<span class="text-[11px] text-on-surface-variant mt-1 block">09:41 AM</span>
+</div>
+<!-- Automation Card -->
+<div class="bg-primary/5 rounded-xl border border-primary/20 p-4">
+<div class="flex justify-between items-center mb-3">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[20px]">water_drop</span>
+<span class="text-label-lg font-bold">Irrigation Active</span>
+</div>
+<span class="text-label-lg font-bold text-primary">18s left</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[40%] transition-all duration-1000"></div>
+</div>
+</div>
+<!-- AI Reasoning Card -->
+<div class="bg-surface-container-low rounded-xl border-l-4 border-primary p-4 shadow-sm">
+<div class="flex items-center gap-2 mb-2 text-primary">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">info</span>
+<span class="text-label-lg font-bold">Why did this happen?</span>
+</div>
+<p class="text-body-md text-on-surface-variant">Sensors detected a 12% drop in substrate humidity over the last 4 hours due to high ambient temperature (28°C). A short burst of water prevents root stress.</p>
+<div class="mt-4">
+<img alt="Irrigation nozzle spraying green leaves" class="w-full h-40 object-cover rounded-lg shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOSyQGSVd71PGFXQR6q8JtEW5hzK6womgNTw9YUstgL-5_8x78nuP955mQdZNzttGfN78BuppEziLQKb86Y6uyP6xj6-1x_AkFyDWlAaGSFHhd46kp0rPIrrJZH1lep9kjfbmBwAk8y6RoWClg5lu1BQY139-VECgZHqy08kudfoKVPTCLGVeHoDAdbvIWiMpGJGyYwxwA3W9NCUa5qgZzp0ACsKQIB1cAmov-n7FAQc7SnPwoGzFCNKjKuq-saZ4151BawJb1MF_2"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Recommended Actions -->
+<div class="flex flex-col items-center gap-3 pt-6">
+<p class="text-on-surface-variant text-[14px] font-bold uppercase tracking-wider">Recommended Actions</p>
+<div class="flex flex-wrap justify-center gap-2">
+<button class="bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant px-5 py-2.5 rounded-full border border-outline-variant transition-all text-label-lg font-bold active:scale-95 shadow-sm">
+                        Diagnosis plant health
+                    </button>
+<button class="bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant px-5 py-2.5 rounded-full border border-outline-variant transition-all text-label-lg font-bold active:scale-95 shadow-sm">
+                        How to grow basil better?
+                    </button>
+<button class="bg-surface-container-lowest hover:bg-primary-container hover:text-on-primary-container text-on-surface-variant px-5 py-2.5 rounded-full border border-outline-variant transition-all text-label-lg font-bold active:scale-95 shadow-sm">
+                        Monitor Rack B
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Interactive Input Zone -->
+<div class="fixed bottom-16 left-0 w-full z-40 px-margin-mobile pb-6 pt-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+<div class="max-w-2xl mx-auto">
+<div class="bg-surface-container-lowest rounded-full shadow-[0_8px_24px_rgba(0,0,0,0.06)] border border-outline-variant/50 p-2 flex items-center gap-2">
+<!-- Upload Action -->
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full" title="Upload Image">
+<span class="material-symbols-outlined text-[24px]">add_a_photo</span>
+</button>
+<!-- Text Input Field -->
+<div class="flex-grow min-w-0">
+<input class="w-full bg-transparent border-none focus:ring-0 text-body-md text-on-surface placeholder:text-on-surface-variant/60 px-1" placeholder="Ask FarmPilot AI..." type="text"/>
+</div>
+<div class="flex items-center gap-1.5">
+<!-- Voice Input -->
+<button class="w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full" title="Voice Input">
+<span class="material-symbols-outlined text-[24px]">mic</span>
+</button>
+<!-- Send Button -->
+<button class="w-10 h-10 bg-primary text-on-primary flex items-center justify-center rounded-full shadow-md hover:opacity-90 active:scale-90 transition-all" title="Send Message">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 pb-safe pt-2 bg-surface-container-lowest border-t border-outline-variant/30 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-2 transition-all active:scale-90">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[12px] font-label-lg mt-0.5">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-2 transition-all active:scale-90">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="text-[12px] font-label-lg mt-0.5">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-2 transition-all active:scale-90">
+<span class="material-symbols-outlined">center_focus_strong</span>
+<span class="text-[12px] font-label-lg mt-0.5">Scan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-primary px-4 py-2 transition-all active:scale-90 relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">psychology_alt</span>
+<span class="text-[12px] font-bold mt-0.5">Assistant</span>
+<span class="absolute top-1 right-3 w-1.5 h-1.5 bg-primary rounded-full"></span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant/70 px-4 py-2 transition-all active:scale-90">
+<span class="material-symbols-outlined">notifications</span>
+<span class="text-[12px] font-label-lg mt-0.5">Alerts</span>
+</button>
+</nav>
+</body></html>
+
+<!-- FarmPilot AI - Multimodal Companion -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+                  "primary": "#45634b",
+                  "outline": "#727971",
+                  "on-primary-container": "#f7fff4",
+                  "surface-variant": "#e3e3df",
+                  "primary-fixed-dim": "#adcfb1",
+                  "on-secondary": "#ffffff",
+                  "on-error-container": "#93000a",
+                  "inverse-primary": "#adcfb1",
+                  "surface-tint": "#47654d",
+                  "surface-dim": "#dadad6",
+                  "surface-container-highest": "#e3e3df",
+                  "surface-container": "#eeeeea",
+                  "secondary": "#75584d",
+                  "outline-variant": "#c2c8c0",
+                  "on-tertiary-fixed-variant": "#633b44",
+                  "tertiary-fixed": "#ffd9df",
+                  "on-error": "#ffffff",
+                  "on-background": "#1a1c1a",
+                  "surface-container-low": "#f4f4f0",
+                  "on-tertiary": "#ffffff",
+                  "on-secondary-fixed": "#2b160f",
+                  "tertiary": "#7b5059",
+                  "on-tertiary-container": "#fffbff",
+                  "inverse-surface": "#2f312e",
+                  "on-primary": "#ffffff",
+                  "secondary-fixed": "#ffdbce",
+                  "on-secondary-container": "#795c51",
+                  "error": "#ba1a1a",
+                  "primary-container": "#5d7c62",
+                  "secondary-fixed-dim": "#e4beb2",
+                  "background": "#faf9f5",
+                  "tertiary-fixed-dim": "#efb8c2",
+                  "secondary-container": "#fed7ca",
+                  "on-primary-fixed-variant": "#304d36",
+                  "surface-bright": "#faf9f5",
+                  "error-container": "#ffdad6",
+                  "surface-container-lowest": "#ffffff",
+                  "surface-container-high": "#e9e8e4",
+                  "on-tertiary-fixed": "#311119",
+                  "inverse-on-surface": "#f1f1ed",
+                  "tertiary-container": "#966871",
+                  "on-surface": "#1a1c1a",
+                  "on-primary-fixed": "#03210e",
+                  "on-secondary-fixed-variant": "#5b4137",
+                  "surface": "#faf9f5",
+                  "primary-fixed": "#c9ebcc",
+                  "on-surface-variant": "#424842"
+          },
+          "borderRadius": {
+                  "DEFAULT": "0.25rem",
+                  "lg": "0.5rem",
+                  "xl": "0.75rem",
+                  "full": "9999px"
+          },
+          "spacing": {
+                  "touch-target-min": "56px",
+                  "margin-mobile": "20px",
+                  "gutter": "16px",
+                  "stack-space": "24px"
+          },
+          "fontFamily": {
+                  "label-lg": ["Atkinson Hyperlegible Next"],
+                  "headline-lg": ["Atkinson Hyperlegible Next"],
+                  "body-lg": ["Atkinson Hyperlegible Next"],
+                  "button-text": ["Atkinson Hyperlegible Next"],
+                  "headline-md": ["Atkinson Hyperlegible Next"],
+                  "body-md": ["Atkinson Hyperlegible Next"]
+          },
+          "fontSize": {
+                  "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                  "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                  "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                  "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                  "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                  "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}]
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    body {
+      -webkit-tap-highlight-color: transparent;
+      scroll-behavior: smooth;
+    }
+    .status-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .4; }
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md min-h-screen pb-40">
+<!-- Top Navigation Shell -->
+<nav class="bg-surface sticky top-0 z-50 flex justify-between items-center w-full px-margin-mobile py-4">
+<div class="flex items-center gap-3">
+<h1 class="text-headline-lg font-headline-lg font-bold text-primary">FarmPilot AI</h1>
+<div class="flex items-center gap-2 px-3 py-1 bg-primary-fixed rounded-full">
+<span class="w-2 h-2 bg-primary rounded-full status-pulse"></span>
+<span class="text-label-lg font-label-lg text-on-primary-fixed-variant">AI Active</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-12 h-12 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface" data-icon="settings">settings</span>
+</button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-primary-fixed">
+<img alt="User profile photo" data-alt="Close-up portrait of a friendly elderly farmer with a warm smile and weather-worn skin, wearing a traditional straw hat. The lighting is soft and natural, emphasizing a mood of wisdom and organic connection to the land. The background is a blurred lush green field under a clear morning sky." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEBXPFZJthn0NTtclsWOnDhpGoEuGmLyhwUXzGtsQ1B5znvYjkONTjHbNhZOwDVZLlrc9QyU2pBF8dk9XTSmwFdFvkYqfG4LLSVYSQJBhOoYApS5E5dm9csVOlEmf5__hDdfAaRdO0w1Qdp1CM9V0t81sJyCudwbwL5JJjKo18ecYFjKKiW_C6v3PCos_cDCwC_ojbgn7ijdfzw8LNdQ86yHMNPxb6ZVAOpqldtxYaOcfISgapdzXDh8A8izmb4ongelCnJzvhqyNj"/>
+</div>
+</div>
+</nav>
+<main class="px-margin-mobile pt-stack-space space-y-stack-space">
+<!-- AI Diagnosis Message -->
+<section class="flex flex-col gap-4">
+<div class="flex items-start gap-4">
+<div class="flex-shrink-0 w-12 h-12 rounded-xl bg-primary-container flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-on-primary-container text-3xl" data-icon="psychology_alt">psychology_alt</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-2xl rounded-tl-none shadow-[0_4px_20px_rgba(93,124,98,0.06)] border border-outline-variant max-w-[85%]">
+<p class="text-body-lg font-body-lg text-on-surface">
+            I've identified an <span class="font-bold text-secondary">early-stage nitrogen deficiency</span> in Rack B. The leaves are showing typical pale green coloration which could impact your yield if left untreated.
+          </p>
+<p class="text-body-md font-body-md text-on-surface-variant mt-2">
+            Based on your farm's history, I've gathered some solutions to help you get back on track.
+          </p>
+</div>
+</div>
+</section>
+<!-- Solutions Section -->
+<section class="space-y-6">
+<h2 class="text-headline-md font-headline-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
+        Solutions for your Farm
+      </h2>
+<!-- Urgent / Local Subsection -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary" data-icon="schedule">schedule</span>
+<h3 class="text-label-lg font-label-lg text-on-surface-variant">Need it Urgently?</h3>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Local Supplier Card 1 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-label-lg font-label-lg text-on-surface">GreenGrow Supplies</h4>
+<p class="text-body-md font-body-md text-on-surface-variant">2.4 miles away • Open until 6 PM</p>
+</div>
+<span class="bg-primary-container/10 text-primary-container px-3 py-1 rounded-full text-sm font-bold">In Stock</span>
+</div>
+<button class="flex items-center justify-center gap-2 w-full py-3 bg-surface-container-high rounded-xl text-on-surface font-button-text active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+              View Map
+            </button>
+</div>
+<!-- Local Supplier Card 2 -->
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex flex-col gap-3">
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-label-lg font-label-lg text-on-surface">City Farm Hub</h4>
+<p class="text-body-md font-body-md text-on-surface-variant">4.1 miles away • Open until 8 PM</p>
+</div>
+<span class="bg-secondary-container/10 text-secondary px-3 py-1 rounded-full text-sm font-bold">Limited Stock</span>
+</div>
+<button class="flex items-center justify-center gap-2 w-full py-3 bg-surface-container-high rounded-xl text-on-surface font-button-text active:scale-95 transition-transform">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+              View Map
+            </button>
+</div>
+</div>
+</div>
+<!-- Online Subsection -->
+<div class="space-y-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="shopping_cart">shopping_cart</span>
+<h3 class="text-label-lg font-label-lg text-on-surface-variant">Prefer Online?</h3>
+</div>
+<div class="grid grid-cols-1 gap-4">
+<!-- Product Card 1 -->
+<div class="bg-surface-container-lowest overflow-hidden rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex items-center">
+<div class="w-32 h-32 flex-shrink-0">
+<img alt="Organic Nitrogen Booster" class="w-full h-full object-cover" data-alt="A professional-grade organic nitrogen fertilizer bottle sitting on a clean wooden potting bench. The lighting is soft and daylight-filled, with vibrant green indoor plants blurred in the background. The scene is calm and clean, utilizing a palette of earth tones and organic greens to convey health and growth." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcG9bvlGanfLdcv1aI8anDCb3EbFK4zu1fwdD0AM2wNHjB5857pmJ4fS0hsOgLE1GQtfzzAFXv7bndsL-I_RZ-aMpgjBcasIVG6BKWHA3bFmpFAQVjmfTSmlMAHeSJH2X0Fbx8qpUmsGmhvNr2FZCkVa9gpSCdhfZBC-68dOmm_GTvnFmKdIBgy-FJ3oRxYl0b23_f_SxeKr9hc2ItQvSinJkZzNRlmIrG1H8tEJckbsfFncv-S43ObajOYpjczp5qSf0oJa4D2yba"/>
+</div>
+<div class="p-4 flex flex-col gap-2 flex-grow">
+<div>
+<h4 class="text-label-lg font-label-lg text-on-surface leading-tight">Organic Nitrogen Booster</h4>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-sm font-bold">4.8 (120 reviews)</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary py-2 px-4 rounded-lg font-button-text text-sm active:scale-95 transition-transform">
+                View Product
+              </button>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-surface-container-lowest overflow-hidden rounded-xl border border-outline-variant shadow-[0_4px_12px_rgba(0,0,0,0.04)] flex items-center">
+<div class="w-32 h-32 flex-shrink-0">
+<img alt="Liquid Kelp Fertilizer" class="w-full h-full object-cover" data-alt="A dark amber glass bottle of liquid seaweed fertilizer displayed against a backdrop of fresh, dew-covered garden leaves. The sunlight filters through the foliage creating bright, organic highlights. The image captures a sense of tactile reliability and biological precision using a soft, modern photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSGhqeez0KeatllVy1waAcwgurcd8w8FVgcLdAAm4dLcs7AwKEUrc08P8OdcQxyy5OliUKlvfvw8wPbEBuSzj5dza5-tDht_ybmy1glXKm23tAThaVHAGcCUaF6t9PdBiTpu1x9JIMmKpYyyKss_gTPHvb_KoXc4cNT5o-gN7-MDlar8tXOY0T7QSGkQQicLCM7laBl-sNx0lc-iOlse1_1-tp5o3DVJsorgLUixexH2hvyoIEetVmSuH_J-aahaq_3VYfIAcFeonU"/>
+</div>
+<div class="p-4 flex flex-col gap-2 flex-grow">
+<div>
+<h4 class="text-label-lg font-label-lg text-on-surface leading-tight">Liquid Kelp Fertilizer</h4>
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-sm" data-icon="star" data-weight="fill" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="text-sm font-bold">4.9 (85 reviews)</span>
+</div>
+</div>
+<button class="bg-primary text-on-primary py-2 px-4 rounded-lg font-button-text text-sm active:scale-95 transition-transform">
+                View Product
+              </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Follow up Suggestions -->
+<section class="pb-12 overflow-x-auto no-scrollbar">
+<div class="flex gap-3 min-w-max">
+<button class="px-5 py-3 rounded-full bg-surface-container-high border border-outline-variant text-on-surface font-label-lg hover:bg-surface-container-highest transition-colors active:scale-95">
+          How can I prevent this?
+        </button>
+<button class="px-5 py-3 rounded-full bg-surface-container-high border border-outline-variant text-on-surface font-label-lg hover:bg-surface-container-highest transition-colors active:scale-95">
+          Show trends
+        </button>
+<button class="px-5 py-3 rounded-full bg-surface-container-high border border-outline-variant text-on-surface font-label-lg hover:bg-surface-container-highest transition-colors active:scale-95">
+          Monitor this rack
+        </button>
+<button class="px-5 py-3 rounded-full bg-surface-container-high border border-outline-variant text-on-surface font-label-lg hover:bg-surface-container-highest transition-colors active:scale-95">
+          Best organic solution?
+        </button>
+</div>
+</section>
+</main>
+<!-- Input Bar & Fixed UI Shell -->
+<div class="fixed bottom-0 left-0 w-full z-50">
+<!-- Chat Input Area -->
+<div class="px-margin-mobile pb-6 pt-2 bg-gradient-to-t from-background via-background to-transparent">
+<div class="flex items-center gap-2 bg-surface-container-lowest border-2 border-primary-fixed p-2 rounded-2xl shadow-xl">
+<button class="w-12 h-12 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-3xl" data-icon="add_circle">add_circle</span>
+</button>
+<input class="flex-grow bg-transparent border-none focus:ring-0 text-body-md placeholder:text-outline py-2" placeholder="Ask about Rack B..." type="text"/>
+<button class="w-12 h-12 flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined text-3xl" data-icon="mic">mic</span>
+</button>
+<button class="w-14 h-14 bg-primary rounded-xl flex items-center justify-center text-on-primary shadow-md active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-3xl" data-icon="send">send</span>
+</button>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<nav class="bg-surface-container-lowest dark:bg-surface-container-low shadow-[0_-4px_20px_rgba(93,124,98,0.08)] flex justify-around items-center px-2 pb-4 pt-2 rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="text-label-lg font-label-lg">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+<span class="text-label-lg font-label-lg">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="text-label-lg font-label-lg">Scan</span>
+</a>
+<!-- Active Tab: Assistant -->
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-2 scale-90 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="psychology_alt">psychology_alt</span>
+<span class="text-label-lg font-label-lg">Assistant</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-2 hover:bg-surface-container-highest transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="text-label-lg font-label-lg">Alerts</span>
+</a>
+</nav>
+</div>
+</body></html>
+
+<!-- AI Assistant - Contextual Solutions -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Alerts Center - FarmPilot AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffd9df",
+                        "tertiary-container": "#966871",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#304d36",
+                        "inverse-primary": "#adcfb1",
+                        "error": "#ba1a1a",
+                        "tertiary": "#7b5059",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#03210e",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#e9e8e4",
+                        "on-surface": "#1a1c1a",
+                        "on-primary-container": "#f7fff4",
+                        "secondary-container": "#fed7ca",
+                        "on-secondary-container": "#795c51",
+                        "secondary": "#75584d",
+                        "on-background": "#1a1c1a",
+                        "surface-container": "#eeeeea",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f4f4f0",
+                        "surface-container-highest": "#e3e3df",
+                        "primary-fixed": "#c9ebcc",
+                        "secondary-fixed": "#ffdbce",
+                        "primary": "#45634b",
+                        "surface-variant": "#e3e3df",
+                        "on-tertiary-fixed": "#311119",
+                        "inverse-surface": "#2f312e",
+                        "surface-dim": "#dadad6",
+                        "secondary-fixed-dim": "#e4beb2",
+                        "tertiary-fixed-dim": "#efb8c2",
+                        "primary-fixed-dim": "#adcfb1",
+                        "inverse-on-surface": "#f1f1ed",
+                        "surface-tint": "#47654d",
+                        "on-secondary-fixed": "#2b160f",
+                        "on-surface-variant": "#424842",
+                        "on-secondary-fixed-variant": "#5b4137",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#633b44",
+                        "background": "#faf9f5",
+                        "surface": "#faf9f5",
+                        "outline-variant": "#c2c8c0",
+                        "surface-bright": "#faf9f5",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#5d7c62",
+                        "on-error-container": "#93000a",
+                        "on-tertiary-container": "#fffbff",
+                        "outline": "#727971"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "touch-target-min": "56px",
+                        "gutter": "16px",
+                        "stack-space": "24px",
+                        "margin-mobile": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Atkinson Hyperlegible Next"],
+                        "label-lg": ["Atkinson Hyperlegible Next"],
+                        "button-text": ["Atkinson Hyperlegible Next"],
+                        "headline-md": ["Atkinson Hyperlegible Next"],
+                        "body-lg": ["Atkinson Hyperlegible Next"],
+                        "body-md": ["Atkinson Hyperlegible Next"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                        "label-lg": ["16px", {"lineHeight": "20px", "letterSpacing": "0.5px", "fontWeight": "600"}],
+                        "button-text": ["20px", {"lineHeight": "24px", "fontWeight": "700"}],
+                        "headline-md": ["22px", {"lineHeight": "28px", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "30px", "fontWeight": "400"}],
+                        "body-md": ["18px", {"lineHeight": "26px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Atkinson Hyperlegible Next', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .timeline-line {
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #e9e8e4;
+            z-index: 0;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface min-h-screen pb-32">
+<!-- Top AppBar (from Shared Components JSON) -->
+<header class="fixed top-0 left-0 right-0 z-50 flex justify-between items-center w-full px-margin-mobile h-touch-target-min bg-surface/90 dark:bg-surface-dim/90 backdrop-blur-md shadow-sm">
+<div class="flex items-center gap-3">
+<button class="material-symbols-outlined p-2 text-primary hover:bg-surface-container-high transition-colors Active: scale-95 duration-150" data-icon="menu">menu</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim tracking-tight">FarmPilot AI</h1>
+</div>
+<button class="material-symbols-outlined p-2 text-primary hover:bg-surface-container-high transition-colors Active: scale-95 duration-150" data-icon="smart_toy">smart_toy</button>
+</header>
+<main class="mt-20 px-margin-mobile">
+<!-- Header Section -->
+<div class="flex items-center justify-between mb-stack-space">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Alerts</h2>
+<button class="text-primary font-label-lg px-4 py-2 hover:bg-primary-fixed transition-colors rounded-full active:scale-95 duration-150">
+                Mark all as read
+            </button>
+</div>
+<!-- Filter Chips -->
+<div class="flex gap-3 mb-stack-space overflow-x-auto pb-2 no-scrollbar">
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-lg whitespace-nowrap active:scale-95 transition-all">All</button>
+<button class="bg-surface-container text-on-surface-variant px-6 py-2.5 rounded-full font-label-lg whitespace-nowrap active:scale-95 transition-all">Urgent</button>
+<button class="bg-surface-container text-on-surface-variant px-6 py-2.5 rounded-full font-label-lg whitespace-nowrap active:scale-95 transition-all">Automated</button>
+</div>
+<!-- Notification Timeline -->
+<div class="relative space-y-gutter">
+<div class="timeline-line"></div>
+<!-- Urgent Notification Card -->
+<div class="relative pl-14 group">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 bg-error-container text-on-error-container rounded-full flex items-center justify-center z-10 border-4 border-background shadow-sm">
+<span class="material-symbols-outlined !text-3xl" data-icon="warning" data-weight="fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_12px_rgba(93,124,98,0.08)] active:scale-[0.98] transition-all border-l-8 border-error">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Rack B Humidity Critical</h3>
+<span class="text-on-surface-variant font-label-lg opacity-70">2m ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">Humidity dropped 12% below optimal threshold. AI irrigation schedule has been prioritized.</p>
+</div>
+</div>
+<!-- Urgent Notification Card 2 -->
+<div class="relative pl-14 group">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-full flex items-center justify-center z-10 border-4 border-background shadow-sm">
+<span class="material-symbols-outlined !text-3xl" data-icon="opacity" data-weight="fill" style="font-variation-settings: 'FILL' 1;">opacity</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_12px_rgba(93,124,98,0.08)] active:scale-[0.98] transition-all border-l-8 border-tertiary">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Nutrient Low</h3>
+<span class="text-on-surface-variant font-label-lg opacity-70">15m ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">Main Reservoir A is below 15%. Refill recommended within the next 4 hours to maintain growth rate.</p>
+</div>
+</div>
+<!-- Automatic Action Notification Card -->
+<div class="relative pl-14 group">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 bg-primary-fixed text-on-primary-fixed-variant rounded-full flex items-center justify-center z-10 border-4 border-background shadow-sm">
+<span class="material-symbols-outlined !text-3xl" data-icon="water_drop" data-weight="fill" style="font-variation-settings: 'FILL' 1;">water_drop</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_12px_rgba(93,124,98,0.08)] active:scale-[0.98] transition-all border-l-8 border-primary">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Activated Irrigation</h3>
+<span class="text-on-surface-variant font-label-lg opacity-70">1h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">Root zone sensors detected dry conditions. AI triggered 5-minute misting cycle for Sector 4.</p>
+</div>
+</div>
+<!-- Automatic Action Notification Card 2 -->
+<div class="relative pl-14 group">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 bg-secondary-fixed text-on-secondary-fixed-variant rounded-full flex items-center justify-center z-10 border-4 border-background shadow-sm">
+<span class="material-symbols-outlined !text-3xl" data-icon="light_mode" data-weight="fill" style="font-variation-settings: 'FILL' 1;">light_mode</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_12px_rgba(93,124,98,0.08)] active:scale-[0.98] transition-all border-l-8 border-secondary">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">Lighting Schedule Adjusted</h3>
+<span class="text-on-surface-variant font-label-lg opacity-70">3h ago</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">Energy optimization: Full-spectrum lights dimmed to 60% due to sufficient natural ambient light detection.</p>
+</div>
+</div>
+<!-- General Info Notification Card -->
+<div class="relative pl-14 group">
+<div class="absolute left-0 top-1/2 -translate-y-1/2 w-14 h-14 bg-surface-container-high text-on-surface-variant rounded-full flex items-center justify-center z-10 border-4 border-background shadow-sm">
+<span class="material-symbols-outlined !text-3xl" data-icon="sync" data-weight="fill" style="font-variation-settings: 'FILL' 1;">sync</span>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0_4px_12px_rgba(93,124,98,0.08)] active:scale-[0.98] transition-all border-l-8 border-outline-variant">
+<div class="flex justify-between items-start mb-1">
+<h3 class="font-headline-md text-headline-md text-on-surface">System Sync Complete</h3>
+<span class="text-on-surface-variant font-label-lg opacity-70">Yesterday</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant leading-snug">Satellite data and local sensor logs synchronized successfully. Farm report updated.</p>
+</div>
+</div>
+</div>
+<!-- Empty State Visual Decoration (Bento style card at bottom) -->
+<div class="mt-stack-space bg-surface-container-low rounded-3xl overflow-hidden relative h-48 flex items-center p-6 border border-outline/10">
+<div class="relative z-10 w-2/3">
+<p class="font-headline-md text-headline-md text-primary mb-2">Steady Growth</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Your farm is operating at 94% efficiency today. Great job, Pilot.</p>
+</div>
+<div class="absolute right-0 top-0 bottom-0 w-1/3 bg-cover bg-center" data-alt="A macro close-up of a vibrant green seedling leaf with tiny, sparkling water droplets on its surface. The background is softly blurred with warm, natural sunlight filtering through, creating a peaceful and productive greenhouse atmosphere. The colors are dominated by organic greens and soft earth tones, emphasizing growth and care." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuClAwFgT0QrHAO3JKXGfSOier1RfJBU5FazVLj4rHCjkiaoX5ASAbpLPo3fYtaCj6todeswIUbuL_HmacGcosb1WnbICmM2MCvk4g3nqWWb3BtgMC1l2EMsAnWaG9MYfTCazjawpxt4jxgstKhvl2HnZ2HuhEbGmXFrVDaTkl7WLGE6Ndfi1QA_8_p1pELCHFqc_aqeqF6gACta4sfiycq3KjLeOwkUwvor2rm71wzZXvzgkBnmK58ro7V51DGQ5xqUw95OHxR4_zv-')"></div>
+</div>
+</main>
+<!-- BottomNavBar (from Shared Components JSON) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-2 py-3 pb-safe bg-surface-container/95 dark:bg-surface-container-lowest/95 backdrop-blur-lg shadow-[0_-4px_12px_rgba(93,124,98,0.08)] rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all Active: scale-90 duration-100 ease-out">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-label-lg text-label-lg">Home</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all Active: scale-90 duration-100 ease-out">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dash</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all Active: scale-90 duration-100 ease-out">
+<span class="material-symbols-outlined" data-icon="center_focus_strong">center_focus_strong</span>
+<span class="font-label-lg text-label-lg">Scan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant hover:bg-surface-container-highest transition-all Active: scale-90 duration-100 ease-out">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="font-label-lg text-label-lg">AI</span>
+</button>
+<!-- ACTIVE TAB: Alerts -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1.5 transition-all Active: scale-90 duration-100 ease-out">
+<span class="material-symbols-outlined" data-icon="notifications" data-weight="fill" style="font-variation-settings: 'FILL' 1;">notifications</span>
+<span class="font-label-lg text-label-lg">Alerts</span>
+</button>
+</nav>
+</body></html>
