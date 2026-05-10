@@ -16,7 +16,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final List<_ChatMessage> _messages = [
     _ChatMessage(
       role: 'ai',
-      text: 'Hello! I\'m FarmPilot AI. I\'m currently monitoring all 3 racks. Farm health is at 87%. How can I help you today?',
+      text: 'Hello! I\'m vBlaFarm AI. I\'m currently monitoring all 3 racks. Farm health is at 87%. How can I help you today?',
     ),
   ];
   bool _isTyping = false;
@@ -89,7 +89,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('FarmPilot AI', style: AppTypography.headlineMd.copyWith(color: AppColors.primary, fontSize: 18)),
+                Text('vBlaFarm AI', style: AppTypography.headlineMd.copyWith(color: AppColors.primary, fontSize: 18)),
                 const Row(
                   children: [
                     AIPulseIndicator(size: 6),
@@ -295,13 +295,56 @@ class _QuickSuggestions extends StatelessWidget {
   }
 }
 
-class _ChatInputBar extends StatelessWidget {
+class _ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   const _ChatInputBar({required this.controller, required this.onSend});
 
   @override
+  State<_ChatInputBar> createState() => _ChatInputBarState();
+}
+
+class _ChatInputBarState extends State<_ChatInputBar> {
+  bool _isListening = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_onTextChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onTextChanged);
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    setState(() {});
+  }
+
+  void _handleVoice() async {
+    if (_isListening) return;
+
+    setState(() {
+      _isListening = true;
+    });
+
+    // Simulate listening delay
+    await Future.delayed(const Duration(milliseconds: 2000));
+
+    if (mounted) {
+      setState(() {
+        _isListening = false;
+        widget.controller.text = 'What is the status of Rack B?';
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final hasText = widget.controller.text.trim().isNotEmpty;
+
     return Container(
       padding: EdgeInsets.only(
         left: 16, right: 8, top: 10,
@@ -315,10 +358,13 @@ class _ChatInputBar extends StatelessWidget {
         children: [
           Expanded(
             child: TextField(
-              controller: controller,
+              controller: widget.controller,
               decoration: InputDecoration(
-                hintText: 'Ask about your farm...',
-                hintStyle: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant, fontSize: 15),
+                hintText: _isListening ? 'Listening...' : 'Ask about your farm...',
+                hintStyle: AppTypography.bodyMd.copyWith(
+                  color: _isListening ? AppColors.primary : AppColors.onSurfaceVariant,
+                  fontSize: 15,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: AppRadius.xxlRadius,
                   borderSide: const BorderSide(color: AppColors.outlineVariant),
@@ -336,16 +382,33 @@ class _ChatInputBar extends StatelessWidget {
                 fillColor: AppColors.surfaceContainerLow,
               ),
               textInputAction: TextInputAction.send,
-              onSubmitted: (_) => onSend(),
+              onSubmitted: (_) => widget.onSend(),
             ),
           ),
           const SizedBox(width: 8),
           GestureDetector(
-            onTap: onSend,
-            child: Container(
+            onTap: hasText ? widget.onSend : _handleVoice,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               width: 48, height: 48,
-              decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 22),
+              decoration: BoxDecoration(
+                color: _isListening ? AppColors.secondary : AppColors.primary,
+                shape: BoxShape.circle,
+                boxShadow: _isListening ? [
+                  BoxShadow(
+                    color: AppColors.secondary.withValues(alpha: 0.4),
+                    blurRadius: 12,
+                    spreadRadius: 2,
+                  )
+                ] : null,
+              ),
+              child: Icon(
+                _isListening
+                    ? Icons.graphic_eq_rounded
+                    : (hasText ? Icons.send_rounded : Icons.mic_rounded),
+                color: Colors.white,
+                size: 22,
+              ),
             ),
           ),
         ],

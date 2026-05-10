@@ -97,6 +97,7 @@ class _PrimaryActionState extends State<_PrimaryAction>
             boxShadow: AppShadows.buttonPrimary,
           ),
           child: Stack(
+            alignment: Alignment.center,
             children: [
               // Shimmer overlay on hover
               Positioned.fill(

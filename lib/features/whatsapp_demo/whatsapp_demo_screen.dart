@@ -13,7 +13,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
   final List<_WaMessage> _messages = [
     _WaMessage(
       isMe: false,
-      text: 'Hello! I am FarmPilot. Send me a photo of a plant or ask about a rack status.',
+      text: 'Hello! I am vBlaFarm. Send me a photo of a plant or ask about a rack status.',
       time: '10:00 AM',
     ),
   ];
@@ -89,7 +89,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
       backgroundColor: waBackground,
       appBar: AppBar(
         backgroundColor: waTeal,
-        leadingWidth: 70,
+        leadingWidth: 95,
         leading: Row(
           children: [
             IconButton(
@@ -109,7 +109,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'FarmPilot Bot',
+              'vBlaFarm Bot',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
             ),
             Text(
