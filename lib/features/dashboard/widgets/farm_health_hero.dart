@@ -147,26 +147,12 @@ class FarmHealthHero extends StatelessWidget {
               borderRadius: AppRadius.xxxlRadius,
               child: Stack(
                 children: [
-                  Container(
+                  SizedBox(
                     height: 140,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.primaryFixed,
-                          AppColors.primaryContainer,
-                        ],
-                      ),
-                    ),
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: List.generate(
-                          6,
-                          (i) => _MiniPlantBar(height: 40.0 + i * 15),
-                        ),
-                      ),
+                    width: double.infinity,
+                    child: Image.asset(
+                      'assets/images/dashboard_feed.png',
+                      fit: BoxFit.cover,
                     ),
                   ),
                   // Gradient overlay
@@ -195,34 +181,12 @@ class FarmHealthHero extends StatelessWidget {
                         const SizedBox(width: 8),
                         _OverlayChip(label: 'RACK A', isPrimary: true),
                         const Spacer(),
-                        // Health score
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
-                            borderRadius: AppRadius.fullRadius,
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.favorite_rounded,
-                                color: Colors.white,
-                                size: 12,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '$healthScore%',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
+                        // Expand icon
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(Icons.crop_free_rounded, color: Colors.white, size: 20),
+                          onPressed: () {},
                         ),
                       ],
                     ),

@@ -15,6 +15,7 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
   late final AnimationController _scanCtrl;
   late final Animation<double> _scanAnim;
   bool _scanned = false;
+  bool _calendarAdded = false;
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
   }
 
   void _showCalendarSuccess() {
+    setState(() => _calendarAdded = true);
     showDialog(
       context: context,
       builder: (context) => const _CalendarSuccessModal(),
@@ -159,6 +161,7 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
               bottom: 180, right: 20,
               child: _HarvestCard(
                 onAddCalendar: _showCalendarSuccess,
+                isAdded: _calendarAdded,
                 delay: 1000,
               ),
             ),
@@ -324,9 +327,10 @@ class _ArSmallMetric extends StatelessWidget {
 
 class _HarvestCard extends StatelessWidget {
   final VoidCallback onAddCalendar;
+  final bool isAdded;
   final int delay;
 
-  const _HarvestCard({required this.onAddCalendar, required this.delay});
+  const _HarvestCard({required this.onAddCalendar, required this.isAdded, required this.delay});
 
   @override
   Widget build(BuildContext context) {
@@ -361,15 +365,18 @@ class _HarvestCard extends StatelessWidget {
                   Text('In 3 days', style: AppTypography.headlineMd.copyWith(fontSize: 22, color: AppColors.onSurface)),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
-                    onPressed: onAddCalendar,
+                    onPressed: isAdded ? null : onAddCalendar,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                      backgroundColor: isAdded ? AppColors.surfaceContainerHighest : AppColors.primary,
+                      foregroundColor: isAdded ? AppColors.primary : Colors.white,
+                      disabledBackgroundColor: AppColors.surfaceContainerHighest,
+                      disabledForegroundColor: AppColors.primary,
                       minimumSize: const Size(double.infinity, 40),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: isAdded ? 0 : 2,
                     ),
-                    icon: const Icon(Icons.edit_calendar_outlined, size: 18),
-                    label: const Text('Add to calendar', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    icon: Icon(isAdded ? Icons.check_circle_rounded : Icons.edit_calendar_outlined, size: 18),
+                    label: Text(isAdded ? 'Added to calendar' : 'Add to calendar', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),
