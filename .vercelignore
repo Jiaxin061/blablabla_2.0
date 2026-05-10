@@ -1,9 +1,19 @@
-# Faster uploads — not needed to compile Flutter Web
-.git
-.dart_tool
-android
-ios
-windows
-linux
-macos
-docs
+# Ignore the SDK and local caches
+.flutter-sdk/
+.dart_tool/
+.git/
+.vercel/
+
+# Ignore mobile/desktop platform folders (Vercel only needs 'web' and 'lib')
+android/
+ios/
+linux/
+macos/
+windows/
+
+# Ignore local builds
+build/
+
+# Ignore heavy media or documentation not needed for the web app
+assets/large_videos/
+documentation/
