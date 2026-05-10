@@ -31,6 +31,9 @@ Always provide structured insights with confidence levels when making prediction
   static const String hiveBoxChat = 'chat_cache';
   static const String hiveBoxFarm = 'farm_cache';
 
+  // ─── Web layout (desktop browser: phone-width column, unchanged on native) ─
+  static const double webMobileViewportMaxWidth = 428;
+
   // ─── Animation Durations ──────────────────────────────────────────────────
   static const Duration animFast = Duration(milliseconds: 150);
   static const Duration animMedium = Duration(milliseconds: 300);

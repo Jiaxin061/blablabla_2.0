@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Vercel / CI Flutter SDK clone (not committed)
+.flutter-sdk/
+
 # Symbolication related
 app.*.symbols
 

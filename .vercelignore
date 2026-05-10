@@ -1,0 +1,9 @@
+# Faster uploads — not needed to compile Flutter Web
+.git
+.dart_tool
+android
+ios
+windows
+linux
+macos
+docs
