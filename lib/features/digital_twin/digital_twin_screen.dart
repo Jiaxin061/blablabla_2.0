@@ -8,6 +8,15 @@ class DigitalTwinScreen extends StatelessWidget {
   final String rackId;
   const DigitalTwinScreen({super.key, required this.rackId});
 
+  Map<String, dynamic> get _rackData {
+    return MockFarmData.racks.firstWhere(
+      (rack) => (rack['id'] as String).toUpperCase() == rackId.toUpperCase(),
+      orElse: () => MockFarmData.racks.first,
+    );
+  }
+
+  bool get _isHealthyRack => (_rackData['health'] as String) == 'healthy';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +30,11 @@ class DigitalTwinScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _TwinHeroCard(rackId: rackId),
+                  _TwinHeroCard(
+                    rackId: rackId,
+                    rackData: _rackData,
+                    isHealthyRack: _isHealthyRack,
+                  ),
                   const SizedBox(height: 24),
                   _TrendSection(),
                   const SizedBox(height: 24),
@@ -47,7 +60,7 @@ class DigitalTwinScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomSheet: _buildAIChatBar(),
+      bottomSheet: _buildAIChatBar(context),
     );
   }
 
@@ -90,7 +103,8 @@ class DigitalTwinScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAIChatBar() {
+  Widget _buildAIChatBar(BuildContext context) {
+    final formattedRackId = rackId.toUpperCase();
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
@@ -98,30 +112,35 @@ class DigitalTwinScreen extends StatelessWidget {
         border: Border(top: BorderSide(color: Colors.grey.shade200)),
       ),
       child: SafeArea(
-        child: Container(
-          height: 56,
-          decoration: BoxDecoration(
-            color: const Color(0xFF38523A),
-            borderRadius: BorderRadius.circular(28),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 16),
-              const Icon(Icons.psychology_outlined, color: Colors.white, size: 24),
-              const SizedBox(width: 12),
-              const Expanded(
-                child: Text('Ask AI About Rack B', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
-              ),
-              Container(
-                width: 40, height: 40,
-                margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  shape: BoxShape.circle,
+        child: GestureDetector(
+          onTap: () {
+            context.go('/chat', extra: "How is Rack $formattedRackId today?");
+          },
+          child: Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: const Color(0xFF38523A),
+              borderRadius: BorderRadius.circular(28),
+            ),
+            child: Row(
+              children: [
+                const SizedBox(width: 16),
+                const Icon(Icons.psychology_outlined, color: Colors.white, size: 24),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('Ask AI About Rack $formattedRackId', style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
                 ),
-                child: const Icon(Icons.mic_none_rounded, color: Colors.white, size: 20),
-              ),
-            ],
+                Container(
+                  width: 40, height: 40,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.mic_none_rounded, color: Colors.white, size: 20),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -131,10 +150,28 @@ class DigitalTwinScreen extends StatelessWidget {
 
 class _TwinHeroCard extends StatelessWidget {
   final String rackId;
-  const _TwinHeroCard({required this.rackId});
+  final Map<String, dynamic> rackData;
+  final bool isHealthyRack;
+  const _TwinHeroCard({
+    required this.rackId,
+    required this.rackData,
+    required this.isHealthyRack,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final normalizedRackId = rackId.toUpperCase();
+    final imagePath = switch (normalizedRackId) {
+      'A' => 'assets/images/rackA.png',
+      'B' => 'assets/images/rackB.png',
+      'C' => 'assets/images/rackC.png',
+      _ => 'assets/images/rackA.png', // Default case to fix exhaustiveness
+    };
+    final moisture = rackData['moisture'] as int;
+    final temperature = rackData['temperature'] as double;
+    final ph = rackData['ph'] as double;
+    final ec = rackData['ec'] as double;
+
     return Container(
       height: 320,
       width: double.infinity,
@@ -163,19 +200,13 @@ class _TwinHeroCard extends StatelessWidget {
             ),
           ),
           // Visualization
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _ZoneChip(label: 'STABLE ZONE', icon: Icons.check_circle_outline, color: AppColors.primary),
-                const SizedBox(height: 24),
-                _ZoneChip(
-                  label: 'DIVERGENCE', 
-                  icon: Icons.error_outline, 
-                  color: const Color(0xFFB48375),
-                  isDivergence: true,
-                ),
-              ],
+          Positioned.fill(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(32),
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
           // Confidence Card
@@ -187,19 +218,40 @@ class _TwinHeroCard extends StatelessWidget {
                 color: Colors.white.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Text('91%', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: AppColors.primary)),
-                      SizedBox(width: 4),
-                      Text('AI CONFIDENCE', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey)),
-                      SizedBox(width: 8),
-                      Icon(Icons.verified_outlined, size: 14, color: AppColors.primary),
+                      Text(
+                        isHealthyRack ? '95%' : '88%',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Text(
+                        'AI CONFIDENCE',
+                        style: TextStyle(
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(
+                        Icons.verified_outlined,
+                        size: 14,
+                        color: AppColors.primary,
+                      ),
                     ],
                   ),
-                  Text('Live Stream • Growth Model v2.4', style: TextStyle(fontSize: 8, color: Colors.grey)),
+                  Text(
+                    isHealthyRack ? 'Healthy profile detected' : 'Divergence detected',
+                    style: const TextStyle(fontSize: 8, color: Colors.grey),
+                  ),
                 ],
               ),
             ),
@@ -208,7 +260,7 @@ class _TwinHeroCard extends StatelessWidget {
           Positioned(
             bottom: 20, right: 20,
             child: Container(
-              width: 180,
+              width: 190,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.9),
@@ -220,15 +272,37 @@ class _TwinHeroCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Zone B Anomaly', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                        Text('Tap for micro-thermal analysis', style: AppTypography.caption.copyWith(fontSize: 9)),
+                        Text(
+                          isHealthyRack ? 'Rack $rackId Stable' : 'Rack $rackId Alert',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          'Moisture $moisture% • ${temperature.toStringAsFixed(1)}°C',
+                          style: AppTypography.caption.copyWith(fontSize: 9),
+                        ),
+                        Text(
+                          'pH ${ph.toStringAsFixed(1)} • EC ${ec.toStringAsFixed(1)}',
+                          style: AppTypography.caption.copyWith(fontSize: 9),
+                        ),
                       ],
                     ),
                   ),
                   Container(
                     width: 36, height: 36,
-                    decoration: const BoxDecoration(color: Color(0xFF38523A), shape: BoxShape.circle),
-                    child: const Icon(Icons.center_focus_strong_outlined, color: Colors.white, size: 18),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFF38523A),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      isHealthyRack
+                          ? Icons.check_circle_outline_rounded
+                          : Icons.warning_amber_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
                   ),
                 ],
               ),

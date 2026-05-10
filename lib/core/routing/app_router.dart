@@ -48,8 +48,10 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: AppRoutes.chat,
-              pageBuilder: (context, state) => const NoTransitionPage(
-                child: ChatScreen(),
+              pageBuilder: (context, state) => NoTransitionPage(
+                child: ChatScreen(
+                  initialQuery: state.extra as String?,
+                ),
               ),
             ),
           ],
