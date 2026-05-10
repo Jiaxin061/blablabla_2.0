@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "193438887463",
+    "project_id": "vblafarm",
+    "storage_bucket": "vblafarm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:193438887463:android:fd859aea369d8c1660a802",
+        "android_client_info": {
+          "package_name": "com.vblafarm.vbla_farm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-gV9jd3PxVRvS_QzPbH1rdfuOuXi964c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
