@@ -34,30 +34,52 @@ class VBlaFarmApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       routerConfig: appRouter,
-      // Web only: letterboxed phone-width column on desktop browsers.
-      // Native Android/iOS: `kIsWeb` is false — this branch is skipped and the
-      // widget tree matches a MaterialApp.router with no builder (full screen).
       builder: (context, child) {
         if (!kIsWeb) {
           return child ?? const SizedBox.shrink();
         }
-        final mq = MediaQuery.of(context);
-        final maxW = AppConstants.webMobileViewportMaxWidth;
-        final effectiveWidth =
-            mq.size.width > maxW ? maxW : mq.size.width;
-        return ColoredBox(
-          color: AppColors.background,
-          child: Center(
-            child: MediaQuery(
-              data: mq.copyWith(
-                size: Size(effectiveWidth, mq.size.height),
+        
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final width = constraints.maxWidth;
+            final maxW = AppConstants.webMobileViewportMaxWidth;
+            
+            // Scale down slightly if viewport width is too small
+            final scale = width < maxW ? width / maxW : 1.0;
+            
+            return Scaffold(
+              backgroundColor: Colors.black87,
+              body: Center(
+                child: Transform.scale(
+                  scale: scale,
+                  alignment: Alignment.topCenter,
+                  child: Container(
+                    width: maxW,
+                    decoration: BoxDecoration(
+                      color: AppColors.background,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: const [
+                        BoxShadow(
+                          blurRadius: 20,
+                          color: Colors.black26,
+                        )
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(30),
+                      // Remove fixed height, allow content to dictate or expand
+                      child: MediaQuery(
+                        data: MediaQuery.of(context).copyWith(
+                          size: Size(maxW, MediaQuery.of(context).size.height / scale),
+                        ),
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
+                  ),
+                ),
               ),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: maxW),
-                child: child ?? const SizedBox.shrink(),
-              ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

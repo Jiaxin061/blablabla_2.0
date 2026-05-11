@@ -71,109 +71,116 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
             ),
           ),
 
-          // ── Top Bar ──────────────────────────────────────────────────────
-          Positioned(
-            top: 0, left: 0, right: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
-                      onPressed: () => context.pop(),
-                    ),
-                    const SizedBox(width: 8),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          // ── Scrollable UI Overlay ─────────────────────────────────────────
+          SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(
                       children: [
-                        Text('vBlaFarm AI',
-                            style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 20)),
-                        const Row(
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
+                          onPressed: () => context.pop(),
+                        ),
+                        const SizedBox(width: 8),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AIPulseIndicator(size: 6, color: Colors.greenAccent),
-                            SizedBox(width: 5),
-                            Text('Live Analysis Active',
-                                style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white70)),
+                            Text('vBlaFarm AI',
+                                style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 20)),
+                            const Row(
+                              children: [
+                                AIPulseIndicator(size: 6, color: Colors.greenAccent),
+                                SizedBox(width: 5),
+                                Text('Live Analysis Active',
+                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white70)),
+                              ],
+                            ),
                           ],
+                        ),
+                        const Spacer(),
+                        const CircleAvatar(
+                          backgroundColor: Colors.white24,
+                          child: Icon(Icons.settings_outlined, color: Colors.white, size: 20),
                         ),
                       ],
                     ),
-                    const Spacer(),
-                    const CircleAvatar(
-                      backgroundColor: Colors.white24,
-                      child: Icon(Icons.settings_outlined, color: Colors.white, size: 20),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-
-          // ── Scan Frame ───────────────────────────────────────────────────
-          if (!_scanned)
-            Center(
-              child: _ScanFrame(animation: _scanAnim),
-            ),
-
-          // ── Floating Metric Cards ─────────────────────────────────────────
-          if (_scanned) ...[
-            // Top Right: Crop & Stage
-            Positioned(
-              top: 180, right: 20,
-              child: _ArMetricCard(
-                title: 'CROP',
-                value: 'Lettuce',
-                icon: Icons.eco_outlined,
-                delay: 200,
-              ),
-            ),
-            Positioned(
-              top: 275, right: 20,
-              child: _ArMetricCard(
-                title: 'STAGE',
-                value: 'Seedling',
-                icon: Icons.grain_outlined,
-                delay: 400,
-              ),
-            ),
-
-            // Middle: Humidity & Temp
-            Positioned(
-              top: 380, right: 100,
-              child: _ArSmallMetric(
-                value: '75%',
-                icon: Icons.water_drop_outlined,
-                delay: 600,
-              ),
-            ),
-            Positioned(
-              top: 380, right: 20,
-              child: _ArSmallMetric(
-                value: '22°C',
-                icon: Icons.thermostat_outlined,
-                delay: 800,
-              ),
-            ),
-
-            // Bottom Right: Harvest
-            Positioned(
-              bottom: 180, right: 20,
-              child: _HarvestCard(
-                onAddCalendar: _showCalendarSuccess,
-                isAdded: _calendarAdded,
-                delay: 1000,
-              ),
-            ),
-          ],
-
-          // ── Bottom Action Button ──────────────────────────────────────────
-          Positioned(
-            bottom: 40, left: 24, right: 24,
-            child: _OperationalButton(
-              label: 'View AI Insight',
-              icon: Icons.insights_rounded,
-              onPressed: () => context.push('/farm-overview/digital-twin/B'),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: Column(
+                      children: [
+                        if (!_scanned)
+                          Expanded(
+                            child: Center(
+                              child: _ScanFrame(animation: _scanAnim),
+                            ),
+                          ),
+                        if (_scanned) ...[
+                          const SizedBox(height: 20),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: _ArMetricCard(
+                              title: 'CROP',
+                              value: 'Lettuce',
+                              icon: Icons.eco_outlined,
+                              delay: 200,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: _ArMetricCard(
+                              title: 'STAGE',
+                              value: 'Seedling',
+                              icon: Icons.grain_outlined,
+                              delay: 400,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              _ArSmallMetric(
+                                value: '75%',
+                                icon: Icons.water_drop_outlined,
+                                delay: 600,
+                              ),
+                              const SizedBox(width: 16),
+                              _ArSmallMetric(
+                                value: '22°C',
+                                icon: Icons.thermostat_outlined,
+                                delay: 800,
+                              ),
+                            ],
+                          ),
+                          const Spacer(),
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: _HarvestCard(
+                              onAddCalendar: _showCalendarSuccess,
+                              isAdded: _calendarAdded,
+                              delay: 1000,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                        _OperationalButton(
+                          label: 'View AI Insight',
+                          icon: Icons.insights_rounded,
+                          onPressed: () => context.push('/farm-overview/digital-twin/B'),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
