@@ -209,103 +209,132 @@ class _TwinHeroCard extends StatelessWidget {
               ),
             ),
           ),
-          // Confidence Card
+          // Bottom Cards (Confidence and Anomaly Detail)
           Positioned(
-            bottom: 20, left: 20,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        isHealthyRack ? '95%' : '88%',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'AI CONFIDENCE',
-                        style: TextStyle(
-                          fontSize: 8,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      const Icon(
-                        Icons.verified_outlined,
-                        size: 14,
-                        color: AppColors.primary,
-                      ),
-                    ],
-                  ),
-                  Text(
-                    isHealthyRack ? 'Healthy profile detected' : 'Divergence detected',
-                    style: const TextStyle(fontSize: 8, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Anomaly Detail
-          Positioned(
-            bottom: 20, right: 20,
-            child: Container(
-              width: 190,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
+            bottom: 16,
+            left: 16,
+            right: 16,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                // Confidence Card
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          isHealthyRack ? 'Rack $rackId Stable' : 'Rack $rackId Alert',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          children: [
+                            Text(
+                              isHealthyRack ? '95%' : '88%',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Expanded(
+                              child: Text(
+                                'AI CONFIDENCE',
+                                style: TextStyle(
+                                  fontSize: 7,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 2),
+                            const Icon(
+                              Icons.verified_outlined,
+                              size: 14,
+                              color: AppColors.primary,
+                            ),
+                          ],
                         ),
+                        const SizedBox(height: 2),
                         Text(
-                          'Moisture $moisture% • ${temperature.toStringAsFixed(1)}°C',
-                          style: AppTypography.caption.copyWith(fontSize: 9),
-                        ),
-                        Text(
-                          'pH ${ph.toStringAsFixed(1)} • EC ${ec.toStringAsFixed(1)}',
-                          style: AppTypography.caption.copyWith(fontSize: 9),
+                          isHealthyRack ? 'Healthy profile detected' : 'Divergence detected',
+                          style: const TextStyle(fontSize: 8, color: Colors.grey),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                   ),
-                  Container(
-                    width: 36, height: 36,
-                    decoration: const BoxDecoration(
-                      color: Color(0xFF38523A),
-                      shape: BoxShape.circle,
+                ),
+                const SizedBox(width: 8),
+                // Anomaly Detail
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Icon(
-                      isHealthyRack
-                          ? Icons.check_circle_outline_rounded
-                          : Icons.warning_amber_rounded,
-                      color: Colors.white,
-                      size: 18,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                isHealthyRack ? 'Rack $rackId Stable' : 'Rack $rackId Alert',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Moisture $moisture% • ${temperature.toStringAsFixed(1)}°C',
+                                style: AppTypography.caption.copyWith(fontSize: 8),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                'pH ${ph.toStringAsFixed(1)} • EC ${ec.toStringAsFixed(1)}',
+                                style: AppTypography.caption.copyWith(fontSize: 8),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Container(
+                          width: 32,
+                          height: 32,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF38523A),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isHealthyRack
+                                ? Icons.check_circle_outline_rounded
+                                : Icons.warning_amber_rounded,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],

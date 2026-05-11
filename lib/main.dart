@@ -35,10 +35,8 @@ class VBlaFarmApp extends StatelessWidget {
       theme: AppTheme.light,
       routerConfig: appRouter,
       builder: (context, child) {
-        if (!kIsWeb) {
-          return child ?? const SizedBox.shrink();
-        }
-        
+        // Apply the same responsive constraints across all platforms
+
         return LayoutBuilder(
           builder: (context, constraints) {
             final width = constraints.maxWidth;
