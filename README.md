@@ -5,6 +5,7 @@
 </div>
 
 ---
+**Case Study 1**: Vertical Farming
 
 **Team Name:** blablabla  
 **Live Demo:** [https://blablabla-2-0.vercel.app/](https://blablabla-2-0.vercel.app/)
@@ -71,3 +72,10 @@ The system utilizes a clean, feature-based architecture (e.g., `auth`, `dashboar
 
 ## 🤝 Team
 Built with ❤️ by team **blablabla**.
+<ul>
+  <li>Yap Jia Xin</li>
+  <li>Karen Voon Xiu Wen</li>
+  <li>Chang Wei Lam</li>
+  <li>Ng Jin En</li>
+  <li>Lim En Dhong</li>
+</ul>
