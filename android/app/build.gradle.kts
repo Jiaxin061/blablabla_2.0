@@ -35,10 +35,22 @@ android {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.getByName("debug")
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    val wpilibVersion = "2024.3.2"
+    // apriltag-java JNI needs wpiutil RuntimeLoader at runtime (R8 release build)
+    implementation("edu.wpi.first.apriltag:apriltag-java:$wpilibVersion")
+    implementation("edu.wpi.first.wpiutil:wpiutil-java:$wpilibVersion")
+    implementation("com.quickbirdstudios:opencv:4.5.3.0")
 }

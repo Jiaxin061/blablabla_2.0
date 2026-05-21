@@ -30,6 +30,7 @@ Always provide structured insights with confidence levels when making prediction
   static const String hiveBoxSettings = 'settings';
   static const String hiveBoxChat = 'chat_cache';
   static const String hiveBoxFarm = 'farm_cache';
+  static const String hiveBoxTagRegistry = 'tag_registry';
 
   // ─── Web layout (desktop browser: phone-width column, unchanged on native) ─
   static const double webMobileViewportMaxWidth = 428;

@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../core/theme/theme.dart';
-import '../../core/widgets/widgets.dart';
+import '../../core/constants/mock_farm_data.dart';
+import '../../core/constants/tag_constants.dart';
 import '../../core/routing/app_router.dart';
+import '../../core/services/apriltag_platform_detector.dart';
+import '../../core/services/tag_registry_provider.dart';
+import '../../core/theme/theme.dart';
+import 'widgets/ar_camera_scanner.dart';
 
-class ArScanScreen extends StatefulWidget {
+class ArScanScreen extends ConsumerStatefulWidget {
   const ArScanScreen({super.key});
 
   @override
-  State<ArScanScreen> createState() => _ArScanScreenState();
+  ConsumerState<ArScanScreen> createState() => _ArScanScreenState();
 }
 
-class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMixin {
+class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProviderStateMixin {
   late final AnimationController _scanCtrl;
   late final Animation<double> _scanAnim;
   bool _scanned = false;
   bool _calendarAdded = false;
+  bool _isScanning = false;
+  int? _detectedTagId;
+  Map<String, dynamic>? _rackData;
+  String? _scanError;
 
   @override
   void initState() {
@@ -27,11 +36,7 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
     _scanAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _scanCtrl, curve: Curves.easeInOut),
     );
-
-    // Auto-scan after 2 seconds for demo impact
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) setState(() => _scanned = true);
-    });
+    Future.microtask(() => ref.read(tagRegistryProvider.notifier).load());
   }
 
   @override
@@ -40,150 +45,433 @@ class _ArScanScreenState extends State<ArScanScreen> with TickerProviderStateMix
     super.dispose();
   }
 
+  Map<int, String> _effectiveTagMap(TagRegistryState registry) {
+    if (registry.isReady && registry.tagToRack.isNotEmpty) {
+      return registry.tagToRack;
+    }
+    return TagConstants.defaultTagToRack;
+  }
+
+  Map<String, dynamic>? _rackDataForTag(int tagId, Map<int, String> tagMap) {
+    final rackId = tagMap[tagId];
+    if (rackId == null) return null;
+    return MockFarmData.rackById(rackId);
+  }
+
+  Future<void> _completeScan(int tagId) async {
+    if (_isScanning) return;
+
+    final registry = ref.read(tagRegistryProvider);
+    final tagMap = _effectiveTagMap(registry);
+    final rackData = _rackDataForTag(tagId, tagMap);
+
+    if (rackData == null) {
+      setState(() {
+        _scanError = 'Tag $tagId is not assigned to a rack. Open Settings → Rack Tags.';
+      });
+      return;
+    }
+
+    setState(() {
+      _isScanning = true;
+      _scanError = null;
+      _calendarAdded = false;
+    });
+
+    if (!_scanCtrl.isAnimating) {
+      _scanCtrl
+        ..reset()
+        ..repeat(reverse: true);
+    }
+
+    await Future.delayed(const Duration(milliseconds: 900));
+    if (!mounted) return;
+
+    setState(() {
+      _isScanning = false;
+      _scanned = true;
+      _detectedTagId = tagId;
+      _rackData = rackData;
+    });
+    _scanCtrl.stop();
+  }
+
+  void _resetScan() {
+    setState(() {
+      _scanned = false;
+      _calendarAdded = false;
+      _detectedTagId = null;
+      _rackData = null;
+      _scanError = null;
+      _isScanning = false;
+    });
+    _scanCtrl
+      ..reset()
+      ..repeat(reverse: true);
+  }
+
+  void _onClosePressed() {
+    if (_scanned) {
+      _resetScan();
+      return;
+    }
+  }
+
   void _showCalendarSuccess() {
     setState(() => _calendarAdded = true);
+    final rack = _rackData;
     showDialog(
       context: context,
-      builder: (context) => const _CalendarSuccessModal(),
+      builder: (context) => _CalendarSuccessModal(
+        rackId: rack?['id'] as String? ?? 'B',
+        crop: rack?['crop'] as String? ?? 'Lettuce',
+        daysToHarvest: rack?['daysToHarvest'] as int? ?? 3,
+      ),
+    );
+  }
+
+  Widget _buildTagChips({
+    required Map<int, String> tagMap,
+    required bool showActiveState,
+  }) {
+    return Row(
+      children: TagConstants.demoTagIds.map((tagId) {
+        final mappedRack = tagMap[tagId] ?? '?';
+        return Expanded(
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: tagId == 0 ? 0 : 4,
+              right: tagId == 2 ? 0 : 4,
+            ),
+            child: _TagScanChip(
+              tagId: tagId,
+              rackId: mappedRack,
+              isLoading: _isScanning,
+              isActive: showActiveState && _detectedTagId == tagId,
+              onTap: () => _completeScan(tagId),
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final registry = ref.watch(tagRegistryProvider);
+    final tagMap = _effectiveTagMap(registry);
+    final rack = _rackData;
+    final crop = rack?['crop'] as String? ?? '—';
+    final stage = rack?['stage'] as String? ?? '—';
+    final moisture = rack?['moisture'] as int? ?? 0;
+    final temperature = rack?['temperature'] as num? ?? 0;
+    final daysToHarvest = rack?['daysToHarvest'] as int? ?? 0;
+    final rackId = rack?['id'] as String? ?? 'B';
+
+    final useCamera = !_scanned && AprilTagPlatformDetector.isSupported;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
         children: [
-          // ── Background Image ───────────────────────────────────────────
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/ar_scan_bg.png',
-              fit: BoxFit.cover,
+          if (!useCamera)
+            Positioned.fill(
+              child: Image.asset(
+                'assets/images/ar_scan_bg.png',
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-
-          // ── Translucent Overlay & Blur ──────────────────────────────────
           Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.3),
+                color: useCamera
+                    ? Colors.black.withValues(alpha: 0.5)
+                    : Colors.black.withValues(alpha: 0.3),
               ),
             ),
           ),
-
-          // ── Scrollable UI Overlay ─────────────────────────────────────────
           SafeArea(
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.close_rounded, color: Colors.white, size: 28),
-                          onPressed: () => context.pop(),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          _scanned ? Icons.close_rounded : Icons.close_rounded,
+                          color: Colors.white,
+                          size: 28,
                         ),
-                        const SizedBox(width: 8),
-                        Column(
+                        tooltip: _scanned ? 'Close results and scan again' : 'Close',
+                        onPressed: _onClosePressed,
+                      ),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('vBlaFarm AI',
-                                style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 20)),
-                            const Row(
-                              children: [
-                                AIPulseIndicator(size: 6, color: Colors.greenAccent),
-                                SizedBox(width: 5),
-                                Text('Live Analysis Active',
-                                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white70)),
-                              ],
+                            Text(
+                              _scanned ? 'Scan result' : 'vBlaFarm AI',
+                              style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 20),
+                            ),
+                            Text(
+                              _scanned
+                                  ? 'AprilTag $_detectedTagId → Rack $rackId'
+                                  : 'Live Analysis Active',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white70,
+                              ),
                             ),
                           ],
                         ),
-                        const Spacer(),
-                        const CircleAvatar(
-                          backgroundColor: Colors.white24,
-                          child: Icon(Icons.settings_outlined, color: Colors.white, size: 20),
-                        ),
-                      ],
-                    ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.white, size: 24),
+                        tooltip: 'Rack tag setup',
+                        onPressed: () => context.push(AppRoutes.rackTags),
+                      ),
+                    ],
                   ),
                 ),
-                SliverFillRemaining(
-                  hasScrollBody: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                    child: Column(
-                      children: [
-                        if (!_scanned)
-                          Expanded(
-                            child: Center(
-                              child: _ScanFrame(animation: _scanAnim),
-                            ),
-                          ),
-                        if (_scanned) ...[
-                          const SizedBox(height: 20),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _ArMetricCard(
-                              title: 'CROP',
-                              value: 'Lettuce',
-                              icon: Icons.eco_outlined,
-                              delay: 200,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _ArMetricCard(
-                              title: 'STAGE',
-                              value: 'Seedling',
-                              icon: Icons.grain_outlined,
-                              delay: 400,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              _ArSmallMetric(
-                                value: '75%',
-                                icon: Icons.water_drop_outlined,
-                                delay: 600,
-                              ),
-                              const SizedBox(width: 16),
-                              _ArSmallMetric(
-                                value: '22°C',
-                                icon: Icons.thermostat_outlined,
-                                delay: 800,
-                              ),
-                            ],
-                          ),
-                          const Spacer(),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: _HarvestCard(
-                              onAddCalendar: _showCalendarSuccess,
-                              isAdded: _calendarAdded,
-                              delay: 1000,
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                        ],
-                        _OperationalButton(
-                          label: 'View AI Insight',
-                          icon: Icons.insights_rounded,
-                          onPressed: () => context.push('/farm-overview/digital-twin/B'),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
-                  ),
+                Expanded(
+                  child: _scanned && rack != null
+                      ? _buildScanResults(
+                          rackId: rackId,
+                          crop: crop,
+                          stage: stage,
+                          moisture: moisture,
+                          temperature: temperature,
+                          daysToHarvest: daysToHarvest,
+                          tagMap: tagMap,
+                        )
+                      : _buildScanner(tagMap),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildScanner(Map<int, String> tagMap) {
+    final useCamera = AprilTagPlatformDetector.isSupported;
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cameraHeight = (constraints.maxHeight * 0.5).clamp(180.0, 300.0);
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: cameraHeight,
+                  width: double.infinity,
+                  child: useCamera
+                      ? ArCameraScanner(
+                          enabled: !_isScanning,
+                          onTagDetected: _completeScan,
+                          scanOverlay: _ScanFrame(animation: _scanAnim),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _ScanFrame(animation: _scanAnim),
+                          ],
+                        ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  _isScanning
+                      ? 'Reading AprilTag…'
+                      : useCamera
+                          ? 'Hold printed tag inside the frame'
+                          : 'Point camera at rack tag',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
+                if (_scanError != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    _scanError!,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: Colors.orangeAccent, fontSize: 13),
+                  ),
+                ],
+                const SizedBox(height: 10),
+                Text(
+                  useCamera ? 'Or tap a tag manually' : 'Tap the tag you are scanning',
+                  style: AppTypography.caption.copyWith(color: Colors.white70),
+                ),
+                const SizedBox(height: 8),
+                _buildTagChips(tagMap: tagMap, showActiveState: false),
+                const SizedBox(height: 12),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildScanResults({
+    required String rackId,
+    required String crop,
+    required String stage,
+    required int moisture,
+    required num temperature,
+    required int daysToHarvest,
+    required Map<int, String> tagMap,
+  }) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.25),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.5)),
+            ),
+            child: Text(
+              'Rack $rackId identified',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _ArMetricCard(
+              key: ValueKey('crop-$rackId'),
+              title: 'CROP',
+              value: crop.split(' ').last,
+              icon: Icons.eco_outlined,
+              delay: 200,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _ArMetricCard(
+              key: ValueKey('stage-$rackId'),
+              title: 'STAGE',
+              value: stage,
+              icon: Icons.grain_outlined,
+              delay: 400,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _ArSmallMetric(
+                key: ValueKey('moisture-$rackId'),
+                value: '$moisture%',
+                icon: Icons.water_drop_outlined,
+                delay: 600,
+              ),
+              const SizedBox(width: 16),
+              _ArSmallMetric(
+                key: ValueKey('temp-$rackId'),
+                value: '${temperature.toStringAsFixed(1)}°C',
+                icon: Icons.thermostat_outlined,
+                delay: 800,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          Align(
+            alignment: Alignment.centerRight,
+            child: _HarvestCard(
+              key: ValueKey('harvest-$rackId'),
+              daysToHarvest: daysToHarvest,
+              onAddCalendar: _showCalendarSuccess,
+              isAdded: _calendarAdded,
+              delay: 1000,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            'Scan a different tag',
+            style: AppTypography.caption.copyWith(color: Colors.white70),
+          ),
+          const SizedBox(height: 8),
+          _buildTagChips(tagMap: tagMap, showActiveState: true),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: _resetScan,
+            icon: const Icon(Icons.qr_code_scanner_rounded, size: 20),
+            label: const Text('New scan'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: const BorderSide(color: Colors.white70),
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _OperationalButton(
+            label: 'View AI Insight',
+            icon: Icons.insights_rounded,
+            onPressed: () => context.push('${AppRoutes.farmOverview}/digital-twin/$rackId'),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}
+
+class _TagScanChip extends StatelessWidget {
+  final int tagId;
+  final String rackId;
+  final bool isLoading;
+  final bool isActive;
+  final VoidCallback onTap;
+
+  const _TagScanChip({
+    required this.tagId,
+    required this.rackId,
+    required this.isLoading,
+    this.isActive = false,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isActive
+          ? AppColors.primary.withValues(alpha: 0.85)
+          : Colors.white.withValues(alpha: 0.15),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          child: Column(
+            children: [
+              Text('Tag $tagId', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              Text('→ $rackId', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -199,8 +487,8 @@ class _ScanFrame extends StatelessWidget {
       animation: animation,
       builder: (context, child) {
         return Container(
-          width: 280,
-          height: 280,
+          width: 220,
+          height: 220,
           decoration: BoxDecoration(
             border: Border.all(
               color: Colors.white.withValues(alpha: 0.5),
@@ -210,9 +498,8 @@ class _ScanFrame extends StatelessWidget {
           ),
           child: Stack(
             children: [
-              // Corner markers could be added here
               Positioned(
-                top: animation.value * 280,
+                top: animation.value * 220,
                 left: 10,
                 right: 10,
                 child: Container(
@@ -244,6 +531,7 @@ class _ArMetricCard extends StatelessWidget {
   final int delay;
 
   const _ArMetricCard({
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
@@ -278,11 +566,20 @@ class _ArMetricCard extends StatelessWidget {
                     children: [
                       Icon(icon, size: 14, color: AppColors.onSurfaceVariant),
                       const SizedBox(width: 6),
-                      Text(title, style: AppTypography.caption.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1)),
+                      Text(
+                        title,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                          letterSpacing: 1,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 4),
-                  Text(value, style: AppTypography.headlineMd.copyWith(fontSize: 22, color: AppColors.onSurface)),
+                  Text(
+                    value,
+                    style: AppTypography.headlineMd.copyWith(fontSize: 22, color: AppColors.onSurface),
+                  ),
                 ],
               ),
             ),
@@ -298,7 +595,12 @@ class _ArSmallMetric extends StatelessWidget {
   final IconData icon;
   final int delay;
 
-  const _ArSmallMetric({required this.value, required this.icon, required this.delay});
+  const _ArSmallMetric({
+    super.key,
+    required this.value,
+    required this.icon,
+    required this.delay,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +623,10 @@ class _ArSmallMetric extends StatelessWidget {
                 children: [
                   Icon(icon, size: 16, color: AppColors.primary),
                   const SizedBox(width: 8),
-                  Text(value, style: AppTypography.headlineMd.copyWith(fontSize: 16, color: AppColors.onSurface)),
+                  Text(
+                    value,
+                    style: AppTypography.headlineMd.copyWith(fontSize: 16, color: AppColors.onSurface),
+                  ),
                 ],
               ),
             ),
@@ -333,14 +638,27 @@ class _ArSmallMetric extends StatelessWidget {
 }
 
 class _HarvestCard extends StatelessWidget {
+  final int daysToHarvest;
   final VoidCallback onAddCalendar;
   final bool isAdded;
   final int delay;
 
-  const _HarvestCard({required this.onAddCalendar, required this.isAdded, required this.delay});
+  const _HarvestCard({
+    super.key,
+    required this.daysToHarvest,
+    required this.onAddCalendar,
+    required this.isAdded,
+    required this.delay,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final harvestLabel = daysToHarvest <= 0
+        ? 'Ready now'
+        : daysToHarvest == 1
+            ? 'In 1 day'
+            : 'In $daysToHarvest days';
+
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: 1.0),
       duration: Duration(milliseconds: 800 + delay),
@@ -365,11 +683,20 @@ class _HarvestCard extends StatelessWidget {
                     children: [
                       const Icon(Icons.calendar_today_outlined, size: 14, color: AppColors.onSurfaceVariant),
                       const SizedBox(width: 6),
-                      Text('HARVEST', style: AppTypography.caption.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1)),
+                      Text(
+                        'HARVEST',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.onSurfaceVariant,
+                          letterSpacing: 1,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text('In 3 days', style: AppTypography.headlineMd.copyWith(fontSize: 22, color: AppColors.onSurface)),
+                  Text(
+                    harvestLabel,
+                    style: AppTypography.headlineMd.copyWith(fontSize: 22, color: AppColors.onSurface),
+                  ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: isAdded ? null : onAddCalendar,
@@ -383,7 +710,10 @@ class _HarvestCard extends StatelessWidget {
                       elevation: isAdded ? 0 : 2,
                     ),
                     icon: Icon(isAdded ? Icons.check_circle_rounded : Icons.edit_calendar_outlined, size: 18),
-                    label: Text(isAdded ? 'Added to calendar' : 'Add to calendar', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                    label: Text(
+                      isAdded ? 'Added to calendar' : 'Add to calendar',
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),
@@ -437,7 +767,15 @@ class _OperationalButton extends StatelessWidget {
 }
 
 class _CalendarSuccessModal extends StatelessWidget {
-  const _CalendarSuccessModal();
+  final String rackId;
+  final String crop;
+  final int daysToHarvest;
+
+  const _CalendarSuccessModal({
+    required this.rackId,
+    required this.crop,
+    required this.daysToHarvest,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -454,7 +792,8 @@ class _CalendarSuccessModal extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80, height: 80,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
                 color: AppColors.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
@@ -464,9 +803,11 @@ class _CalendarSuccessModal extends StatelessWidget {
             const SizedBox(height: 24),
             Text('Event saved', style: AppTypography.headlineMd.copyWith(color: AppColors.onSurface, fontSize: 24)),
             const SizedBox(height: 8),
-            Text('The harvest reminder has been added to your calendar.',
-                textAlign: TextAlign.center,
-                style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant)),
+            Text(
+              'The harvest reminder has been added to your calendar.',
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+            ),
             const SizedBox(height: 32),
             Container(
               padding: const EdgeInsets.all(16),
@@ -483,8 +824,14 @@ class _CalendarSuccessModal extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('🥬 Harvest: Rack B Lettuce', style: AppTypography.labelLg.copyWith(fontWeight: FontWeight.bold)),
-                        Text('Thursday, Oct 26 • 9:00 – 10:00 AM', style: AppTypography.caption),
+                        Text(
+                          '🥬 Harvest: Rack $rackId $crop',
+                          style: AppTypography.labelLg.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          daysToHarvest <= 0 ? 'Ready for pickup' : 'In $daysToHarvest days • 9:00 AM',
+                          style: AppTypography.caption,
+                        ),
                       ],
                     ),
                   ),

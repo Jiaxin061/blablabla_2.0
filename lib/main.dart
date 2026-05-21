@@ -2,12 +2,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routing/app_router.dart';
+import 'core/services/tag_registry_provider.dart';
+import 'core/services/tag_registry_service.dart';
 import 'core/theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  final tagRegistryService = await TagRegistryService.open();
 
   // Transparent status bar
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -21,7 +26,14 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  runApp(const ProviderScope(child: VBlaFarmApp()));
+  runApp(
+    ProviderScope(
+      overrides: [
+        tagRegistryServiceProvider.overrideWithValue(tagRegistryService),
+      ],
+      child: const VBlaFarmApp(),
+    ),
+  );
 }
 
 class VBlaFarmApp extends StatelessWidget {

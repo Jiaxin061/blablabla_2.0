@@ -80,6 +80,18 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.stackSpace),
           _SettingsSection(
+            title: 'FARM SETUP',
+            children: [
+              _SettingsTile(
+                icon: Icons.qr_code_scanner_rounded,
+                label: 'Rack Tags (AprilTag)',
+                subtitle: 'Assign tag 0/1/2 to racks A/B/C',
+                onTap: () => context.push(AppRoutes.rackTags),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.stackSpace),
+          _SettingsSection(
             title: 'DEMO WORKFLOWS',
             children: [
               _SettingsTile(

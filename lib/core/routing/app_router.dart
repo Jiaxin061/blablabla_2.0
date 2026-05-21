@@ -7,6 +7,7 @@ import '../../features/digital_twin/digital_twin_screen.dart';
 import '../../features/chatbot/chat_screen.dart';
 import '../../features/alerts/alerts_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/rack_tags/rack_tags_screen.dart';
 import '../../features/whatsapp_demo/whatsapp_demo_screen.dart';
 import '../widgets/app_scaffold.dart';
 
@@ -20,6 +21,7 @@ abstract final class AppRoutes {
   static const String alerts = '/alerts';
   static const String settings = '/settings';
   static const String whatsappDemo = '/whatsapp-demo';
+  static const String rackTags = '/rack-tags';
 }
 
 /// Global router using StatefulShellRoute for persistent bottom nav.
@@ -129,6 +131,22 @@ final GoRouter appRouter = GoRouter(
               parent: animation,
               curve: Curves.easeOutCubic,
             )),
+            child: child,
+          );
+        },
+      ),
+    ),
+    // ─── Rack Tags / AprilTag setup (outside shell) ───────────────────────
+    GoRoute(
+      path: AppRoutes.rackTags,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: const RackTagsScreen(),
+        transitionsBuilder: (context, animation, _, child) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.0, 1.0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
             child: child,
           );
         },

@@ -50,6 +50,13 @@ abstract final class MockFarmData {
     },
   ];
 
+  static Map<String, dynamic> rackById(String rackId) {
+    return racks.firstWhere(
+      (rack) => (rack['id'] as String).toUpperCase() == rackId.toUpperCase(),
+      orElse: () => racks.first,
+    );
+  }
+
   // ─── Global Farm Metrics ──────────────────────────────────────────────────
   static const Map<String, dynamic> farmMetrics = {
     'overallHealth': 'healthy',
