@@ -84,8 +84,8 @@ class SettingsScreen extends StatelessWidget {
             children: [
               _SettingsTile(
                 icon: Icons.qr_code_scanner_rounded,
-                label: 'Rack Tags (AprilTag)',
-                subtitle: 'Assign tag 0/1/2 to racks A/B/C',
+                label: 'Tag Registry',
+                subtitle: 'Generate credentials, register racks, print PDF',
                 onTap: () => context.push(AppRoutes.rackTags),
               ),
             ],

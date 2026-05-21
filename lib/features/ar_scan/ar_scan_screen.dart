@@ -130,13 +130,9 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     );
   }
 
-  Widget _buildTagChips({
-    required Map<int, String> tagMap,
-    required bool showActiveState,
-  }) {
+  Widget _buildTagChips({required bool showActiveState}) {
     return Row(
       children: TagConstants.demoTagIds.map((tagId) {
-        final mappedRack = tagMap[tagId] ?? '?';
         return Expanded(
           child: Padding(
             padding: EdgeInsets.only(
@@ -145,7 +141,6 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
             ),
             child: _TagScanChip(
               tagId: tagId,
-              rackId: mappedRack,
               isLoading: _isScanning,
               isActive: showActiveState && _detectedTagId == tagId,
               onTap: () => _completeScan(tagId),
@@ -314,7 +309,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                   style: AppTypography.caption.copyWith(color: Colors.white70),
                 ),
                 const SizedBox(height: 8),
-                _buildTagChips(tagMap: tagMap, showActiveState: false),
+                _buildTagChips(showActiveState: false),
                 const SizedBox(height: 12),
               ],
             ),
@@ -412,7 +407,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
             style: AppTypography.caption.copyWith(color: Colors.white70),
           ),
           const SizedBox(height: 8),
-          _buildTagChips(tagMap: tagMap, showActiveState: true),
+          _buildTagChips(showActiveState: true),
           const SizedBox(height: 12),
           OutlinedButton.icon(
             onPressed: _resetScan,
@@ -440,14 +435,12 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
 
 class _TagScanChip extends StatelessWidget {
   final int tagId;
-  final String rackId;
   final bool isLoading;
   final bool isActive;
   final VoidCallback onTap;
 
-  const _TagScanChip({
+  _TagScanChip({
     required this.tagId,
-    required this.rackId,
     required this.isLoading,
     this.isActive = false,
     required this.onTap,
@@ -464,11 +457,37 @@ class _TagScanChip extends StatelessWidget {
         onTap: isLoading ? null : onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
           child: Column(
             children: [
-              Text('Tag $tagId', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-              Text('→ $rackId', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              Text(
+                'Tag $tagId',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+              const SizedBox(height: 6),
+              Container(
+                height: 52,
+                width: 52,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Image.asset(
+                  TagConstants.assetPathForTagId(tagId),
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => Center(
+                    child: Text(
+                      '$tagId',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
