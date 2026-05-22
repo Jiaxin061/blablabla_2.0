@@ -242,30 +242,6 @@ class _AutoModeToggleState extends State<_AutoModeToggle> {
   }
 }
 
-class _MiniPlantBar extends StatelessWidget {
-  final double height;
-  const _MiniPlantBar({required this.height});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Container(
-          width: 18,
-          height: height,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.3),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(4),
-              topRight: Radius.circular(4),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _OverlayChip extends StatelessWidget {
   final String label;

@@ -135,6 +135,11 @@ class DashboardScreen extends ConsumerWidget {
               delegate: SliverChildListDelegate([
                 const SizedBox(height: AppSpacing.lg),
 
+                // 0. AI Home Copilot Entry Banner
+                _HomeCopilotBanner(),
+
+                const SizedBox(height: AppSpacing.stackSpace),
+
                 // 1. AI Farm Health Hero
                 FarmHealthHero(
                   healthScore: farm.metrics['healthScore'] as int,
@@ -241,6 +246,66 @@ class _AlertChipsRow extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+// ─── AI Home Copilot Banner ───────────────────────────────────────────────────
+
+class _HomeCopilotBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => context.push(AppRoutes.homeCopilot),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.primary, AppColors.aiGlow],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: AppRadius.card,
+          boxShadow: AppShadows.buttonPrimary,
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.2),
+                borderRadius: AppRadius.mdRadius,
+              ),
+              child: const Icon(Icons.smart_toy_rounded, color: Colors.white, size: 24),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'AI Home Copilot',
+                    style: AppTypography.labelLg.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15,
+                    ),
+                  ),
+                  Text(
+                    'Full farm overview & AI insights →',
+                    style: AppTypography.caption.copyWith(
+                      color: Colors.white.withValues(alpha: 0.85),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const AIPulseIndicator(size: 8, color: Colors.white),
+          ],
+        ),
       ),
     );
   }

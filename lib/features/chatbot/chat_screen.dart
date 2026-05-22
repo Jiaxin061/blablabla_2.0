@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/constants/mock_farm_data.dart';
 import '../../core/services/voice_recorder_service.dart';
@@ -17,11 +21,12 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
+  final _picker = ImagePicker();
   final List<_ChatMessage> _messages = [
     _ChatMessage(
       role: 'ai',
       text:
-          'Hello! I\'m vBlaFarm AI. I\'m actively monitoring all racks, with current attention on Rack B for moisture and nutrient recovery.',
+                'Hello! I\'m FarmPilot AI. I\'m actively monitoring all racks, with current attention on Rack 3 for moisture and nutrient recovery.',
       sections: [
         _AISection(
           title: 'Current Farm Snapshot',
@@ -144,6 +149,65 @@ class _ChatScreenState extends State<ChatScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Voice recording is available on mobile only')),
     );
+  }
+
+  Future<void> _pickAndSendPhoto(ImageSource source) async {
+    try {
+      final file = await _picker.pickImage(source: source, imageQuality: 85);
+      if (file == null || !mounted) return;
+
+      setState(() {
+        _messages.add(
+          _ChatMessage(role: 'user', text: '', imagePath: file.path),
+        );
+        _isTyping = true;
+      });
+      _scrollToBottom();
+
+      final bytes = await file.readAsBytes();
+      if (mounted) {
+        setState(() {
+          final i = _messages.length - 1;
+          _messages[i] = _ChatMessage(
+            role: 'user',
+            text: '',
+            imageBytes: bytes,
+            imagePath: kIsWeb ? null : file.path,
+          );
+        });
+      }
+
+      await Future.delayed(const Duration(milliseconds: 1400));
+
+      if (!mounted) return;
+      setState(() {
+        _messages.add(
+          _ChatMessage(
+            role: 'ai',
+            text:
+                'Thanks for the photo — I\'ve analysed the leaves.\n\n'
+                'Early nitrogen stress is likely on Rack B (pale leaf colour). '
+                'I\'ve logged a short irrigation pulse and adjusted the nutrient mix for the next cycle.',
+            sections: [
+              const _AISection(
+                title: 'Photo analysis',
+                content:
+                    'Pale-green colouration detected. This matches early-stage nitrogen deficiency at seedling phase. Monitor for 2 hours after nutrient adjustment.',
+                icon: Icons.image_search_rounded,
+              ),
+            ],
+            actions: ['Suggest product?', 'Diagnose plant health', 'Monitor Rack B'],
+          ),
+        );
+        _isTyping = false;
+      });
+      _scrollToBottom();
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not open photo picker: $e')),
+      );
+    }
   }
 
   _ChatMessage _getAIResponse(String query) {
@@ -420,7 +484,7 @@ class _ChatScreenState extends State<ChatScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('vBlaFarm AI', style: AppTypography.headlineMd.copyWith(color: AppColors.primary, fontSize: 18)),
+                Text('FarmPilot AI', style: AppTypography.headlineMd.copyWith(color: AppColors.primary, fontSize: 18)),
                 const Row(
                   children: [
                     AIPulseIndicator(size: 6),
@@ -463,6 +527,7 @@ class _ChatScreenState extends State<ChatScreen> {
             onSend: () => _sendMessage(_controller.text),
             onVoiceRecorded: _sendVoiceMessage,
             onVoiceUnavailable: _showVoiceUnavailableSnackBar,
+            onPhoto: _pickAndSendPhoto,
           ),
         ],
       ),
@@ -479,6 +544,8 @@ class _ChatMessage {
   final List<String>? actions;
   final String? voicePath;
   final int? voiceDurationSeconds;
+  final Uint8List? imageBytes;
+  final String? imagePath;
 
   _ChatMessage({
     required this.role,
@@ -489,10 +556,14 @@ class _ChatMessage {
     this.actions,
     this.voicePath,
     this.voiceDurationSeconds,
+    this.imageBytes,
+    this.imagePath,
   });
 
   bool get isVoiceMessage =>
       voiceDurationSeconds != null && voiceDurationSeconds! > 0;
+
+  bool get hasImage => imageBytes != null || imagePath != null;
 }
 
 class _AISection {
@@ -606,6 +677,20 @@ class _ChatBubble extends StatelessWidget {
     }
   }
 
+  Widget _buildUploadedImage(_ChatMessage msg) {
+    if (msg.imageBytes != null) {
+      return Image.memory(msg.imageBytes!, width: 220, height: 160, fit: BoxFit.cover);
+    }
+    if (msg.imagePath != null && !kIsWeb) {
+      return Image.file(File(msg.imagePath!), width: 220, height: 160, fit: BoxFit.cover);
+    }
+    return const SizedBox(
+      width: 220,
+      height: 120,
+      child: Center(child: Icon(Icons.image_not_supported_outlined)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isAI = message.role == 'ai';
@@ -649,6 +734,13 @@ class _ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (message.hasImage) ...[
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: _buildUploadedImage(message),
+                    ),
+                    if (message.text.isNotEmpty) const SizedBox(height: 6),
+                  ],
                   if (message.isVoiceMessage)
                     VoiceMessageTile(
                       durationSeconds: message.voiceDurationSeconds!,
@@ -1018,12 +1110,14 @@ class _ChatInputBar extends StatefulWidget {
   final VoidCallback onSend;
   final void Function(String path, int durationSeconds) onVoiceRecorded;
   final VoidCallback onVoiceUnavailable;
+  final void Function(ImageSource source) onPhoto;
 
   const _ChatInputBar({
     required this.controller,
     required this.onSend,
     required this.onVoiceRecorded,
     required this.onVoiceUnavailable,
+    required this.onPhoto,
   });
 
   @override
@@ -1125,6 +1219,34 @@ class _ChatInputBarState extends State<_ChatInputBar> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 filled: true,
                 fillColor: AppColors.surfaceContainerLow,
+                suffixIcon: PopupMenuButton<ImageSource>(
+                  icon: const Icon(Icons.attach_file_rounded, color: AppColors.onSurfaceVariant),
+                  tooltip: 'Attach photo',
+                  onSelected: widget.onPhoto,
+                  itemBuilder: (_) => [
+                    const PopupMenuItem(
+                      value: ImageSource.gallery,
+                      child: Row(
+                        children: [
+                          Icon(Icons.photo_library_rounded),
+                          SizedBox(width: 10),
+                          Text('Gallery'),
+                        ],
+                      ),
+                    ),
+                    if (!kIsWeb)
+                      const PopupMenuItem(
+                        value: ImageSource.camera,
+                        child: Row(
+                          children: [
+                            Icon(Icons.camera_alt_rounded),
+                            SizedBox(width: 10),
+                            Text('Camera'),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
               ),
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => widget.onSend(),

@@ -26,6 +26,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
   bool _scanned = false;
   bool _calendarAdded = false;
   bool _isScanning = false;
+  bool _irrigationActivated = false;
   int? _detectedTagId;
   Map<String, dynamic>? _rackData;
   Map<String, dynamic>? _plantData;
@@ -120,10 +121,23 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     _scanCtrl.stop();
   }
 
+  void _activateIrrigation(String rackId) {
+    if (_irrigationActivated) return;
+    setState(() => _irrigationActivated = true);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Irrigation pulse activated — 30s burst initiated for Rack $rackId'),
+        backgroundColor: const Color(0xFF2E7D32),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   void _resetScan() {
     setState(() {
       _scanned = false;
       _calendarAdded = false;
+      _irrigationActivated = false;
       _detectedTagId = null;
       _rackData = null;
       _plantData = null;
@@ -371,6 +385,18 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     final rackId = plant['rackId'] as String;
     final zoomAsset = plant['zoomAsset'] as String;
     final statusAsset = plant['statusAsset'] as String;
+    final diseaseRisk = plant['diseaseRisk'] as int? ?? _deriveRisk(status, confidence);
+    final growthPercent = plant['growthPercent'] as int? ?? _deriveGrowth(stage, daysToHarvest);
+
+    // Pull live rack environment data
+    final rackInfo = MockFarmData.rackById(rackId);
+    final moisture = rackInfo['moisture'] as int? ?? 0;
+    final temperature = rackInfo['temperature'] as num? ?? 0;
+    final ph = rackInfo['ph'] as num? ?? 0;
+    final ec = rackInfo['ec'] as num? ?? 0;
+    final aiReco = (recommendation.isNotEmpty
+            ? recommendation
+            : rackInfo['aiRecommendation'] as String? ?? '');
 
     final Color statusColor = switch (status) {
       'healthy' => Colors.greenAccent,
@@ -401,17 +427,17 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
             borderRadius: BorderRadius.circular(AppRadius.xl),
             child: Image.asset(
               zoomAsset,
-              height: 220,
+              height: 200,
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                height: 220,
+                height: 200,
                 color: Colors.white10,
                 child: const Center(child: Icon(Icons.eco_outlined, color: Colors.white38, size: 48)),
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           // Status row
           Row(
             children: [
@@ -419,12 +445,12 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                 borderRadius: BorderRadius.circular(AppRadius.lg),
                 child: Image.asset(
                   statusAsset,
-                  width: 72,
-                  height: 72,
+                  width: 64,
+                  height: 64,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
-                    width: 72,
-                    height: 72,
+                    width: 64,
+                    height: 64,
                     decoration: BoxDecoration(
                       color: Colors.white10,
                       borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -440,53 +466,68 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                   children: [
                     Text(
                       plantId,
-                      style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 18),
+                      style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 17),
                     ),
-                    const SizedBox(height: 4),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: statusColor.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(AppRadius.full),
-                        border: Border.all(color: statusColor.withValues(alpha: 0.6)),
-                      ),
-                      child: Text(
-                        '$health% Health',
-                        style: TextStyle(
-                          color: statusColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(AppRadius.full),
+                            border: Border.all(color: statusColor.withValues(alpha: 0.6)),
+                          ),
+                          child: Text(
+                            '$health% Health',
+                            style: TextStyle(color: statusColor, fontWeight: FontWeight.bold, fontSize: 12),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        _DiseaseRiskBadge(riskPercent: diseaseRisk),
+                      ],
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           // Health bar
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          Row(
             children: [
-              Text(
-                'Health Score: $health%',
-                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 6),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.full),
-                child: LinearProgressIndicator(
-                  value: health / 100.0,
-                  minHeight: 8,
-                  backgroundColor: Colors.white12,
-                  valueColor: AlwaysStoppedAnimation<Color>(progressColor),
-                ),
-              ),
+              const Text('Health Score', style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
+              const Spacer(),
+              Text('$health%', style: TextStyle(color: progressColor, fontSize: 12, fontWeight: FontWeight.bold)),
             ],
           ),
+          const SizedBox(height: 6),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.full),
+            child: LinearProgressIndicator(
+              value: health / 100.0,
+              minHeight: 8,
+              backgroundColor: Colors.white12,
+              valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Real-time environment metrics
+          _ArRealtimeMetricsCard(
+            moisture: moisture,
+            temperature: temperature.toDouble(),
+            ph: ph.toDouble(),
+            ec: ec.toDouble(),
+          ),
+          const SizedBox(height: 12),
+          // Growth status
+          _GrowthStatusCard(
+            growthPercent: growthPercent,
+            daysToHarvest: daysToHarvest,
+            stage: stage,
+          ),
           if (issue.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
@@ -497,32 +538,33 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    issue,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
+                  Row(
+                    children: [
+                      Icon(Icons.warning_amber_rounded, color: statusColor, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          issue,
+                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     'AI Confidence: $confidence%',
                     style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
-                  if (recommendation.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      recommendation,
-                      style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
-                    ),
-                  ],
                 ],
               ),
             ),
           ],
-          const SizedBox(height: 16),
-          // Stats row
+          if (aiReco.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _AiRecommendationCard(recommendation: aiReco),
+          ],
+          const SizedBox(height: 14),
+          // Stats strip
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             decoration: BoxDecoration(
@@ -544,7 +586,13 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
             ),
           ),
           const SizedBox(height: 20),
-          // New scan button
+          // Operational actions
+          _IrrigationActionButton(
+            rackId: rackId,
+            isActivated: _irrigationActivated,
+            onActivate: () => _activateIrrigation(rackId),
+          ),
+          const SizedBox(height: 10),
           OutlinedButton.icon(
             onPressed: _resetScan,
             icon: const Icon(Icons.qr_code_scanner_rounded, size: 20),
@@ -556,7 +604,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           _OperationalButton(
             label: 'View Rack $rackId',
             icon: Icons.account_tree_outlined,
@@ -568,6 +616,23 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     );
   }
 
+  int _deriveRisk(String status, int confidence) => switch (status) {
+        'critical' => confidence,
+        'warning' => (confidence * 0.4).round(),
+        _ => 5,
+      };
+
+  int _deriveGrowth(String stage, int daysToHarvest) {
+    final total = switch (stage.toLowerCase()) {
+      'mature' => 10,
+      'seedling' => 25,
+      'vegetative' || 'early vegetative' => 40,
+      _ => 30,
+    };
+    final remaining = daysToHarvest.clamp(0, total);
+    return ((total - remaining) / total * 100).round().clamp(0, 100);
+  }
+
   Widget _buildScanResults({
     required String rackId,
     required String crop,
@@ -577,11 +642,18 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     required int daysToHarvest,
     required Map<int, String> tagMap,
   }) {
+    final rackInfo = MockFarmData.rackById(rackId);
+    final ph = rackInfo['ph'] as num? ?? 0;
+    final ec = rackInfo['ec'] as num? ?? 0;
+    final diseaseRisk = rackInfo['diseaseRisk'] as int? ?? 5;
+    final aiReco = rackInfo['aiRecommendation'] as String? ?? '';
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Rack header with disease risk badge
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
@@ -589,16 +661,34 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.greenAccent.withValues(alpha: 0.5)),
             ),
-            child: Text(
-              'Rack $rackId identified',
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 14,
-              ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Rack $rackId identified',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                  ),
+                ),
+                _DiseaseRiskBadge(riskPercent: diseaseRisk),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+          // AI Recommendation
+          if (aiReco.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 700),
+              curve: Curves.easeOutCubic,
+              builder: (_, v, child) => Opacity(
+                opacity: v,
+                child: Transform.translate(offset: Offset(0, 12 * (1 - v)), child: child),
+              ),
+              child: _AiRecommendationCard(recommendation: aiReco),
+            ),
+          ],
+          const SizedBox(height: 14),
+          // Crop & Stage
           Align(
             alignment: Alignment.centerRight,
             child: _ArMetricCard(
@@ -609,7 +699,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               delay: 200,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Align(
             alignment: Alignment.centerRight,
             child: _ArMetricCard(
@@ -620,26 +710,21 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               delay: 400,
             ),
           ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _ArSmallMetric(
-                key: ValueKey('moisture-$rackId'),
-                value: '$moisture%',
-                icon: Icons.water_drop_outlined,
-                delay: 600,
-              ),
-              const SizedBox(width: 16),
-              _ArSmallMetric(
-                key: ValueKey('temp-$rackId'),
-                value: '${temperature.toStringAsFixed(1)}°C',
-                icon: Icons.thermostat_outlined,
-                delay: 800,
-              ),
-            ],
+          const SizedBox(height: 14),
+          // Full realtime metrics strip (moisture, temp, pH, EC)
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeOutCubic,
+            builder: (_, v, child) => Opacity(opacity: v, child: child),
+            child: _ArRealtimeMetricsCard(
+              moisture: moisture,
+              temperature: temperature.toDouble(),
+              ph: ph.toDouble(),
+              ec: ec.toDouble(),
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 14),
           Align(
             alignment: Alignment.centerRight,
             child: _HarvestCard(
@@ -650,15 +735,18 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
               delay: 1000,
             ),
           ),
-          const SizedBox(height: 20),
-          if (rackId == 'B') ...[
-            const SizedBox(height: 4),
+          const SizedBox(height: 16),
+          // Activate Irrigation operational action
+          _IrrigationActionButton(
+            rackId: rackId,
+            isActivated: _irrigationActivated,
+            onActivate: () => _activateIrrigation(rackId),
+          ),
+          const SizedBox(height: 16),
+          if (rackId == 'B' || rackId == '3') ...[
             Text(
               'Plant Monitor',
-              style: AppTypography.headlineMd.copyWith(
-                color: Colors.white,
-                fontSize: 16,
-              ),
+              style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 16),
             ),
             const SizedBox(height: 12),
             PlantLevelGrid(level: 3),
@@ -688,7 +776,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
           ),
           const SizedBox(height: 12),
           _OperationalButton(
-            label: 'View AI Insight',
+            label: 'View Full Analysis',
             icon: Icons.insights_rounded,
             onPressed: () => context.push('${AppRoutes.farmOverview}/digital-twin/$rackId'),
           ),
@@ -875,53 +963,6 @@ class _ArMetricCard extends StatelessWidget {
   }
 }
 
-class _ArSmallMetric extends StatelessWidget {
-  final String value;
-  final IconData icon;
-  final int delay;
-
-  const _ArSmallMetric({
-    super.key,
-    required this.value,
-    required this.icon,
-    required this.delay,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
-      duration: Duration(milliseconds: 600 + delay),
-      curve: Curves.easeOutCubic,
-      builder: (context, val, child) {
-        return Opacity(
-          opacity: val,
-          child: Transform.translate(
-            offset: Offset(0, 10 * (1 - val)),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  Icon(icon, size: 16, color: AppColors.primary),
-                  const SizedBox(width: 8),
-                  Text(
-                    value,
-                    style: AppTypography.headlineMd.copyWith(fontSize: 16, color: AppColors.onSurface),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
 class _HarvestCard extends StatelessWidget {
   final int daysToHarvest;
   final VoidCallback onAddCalendar;
@@ -1081,6 +1122,330 @@ class _PlantStatDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(width: 1, height: 32, color: Colors.white12);
+  }
+}
+
+// ── Disease Risk Badge ────────────────────────────────────────────────────────
+class _DiseaseRiskBadge extends StatelessWidget {
+  final int riskPercent;
+  const _DiseaseRiskBadge({required this.riskPercent});
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color;
+    final String label;
+    if (riskPercent >= 70) {
+      color = Colors.redAccent;
+      label = 'High Risk';
+    } else if (riskPercent >= 25) {
+      color = Colors.amberAccent;
+      label = 'Med Risk';
+    } else {
+      color = Colors.greenAccent;
+      label = 'Low Risk';
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withValues(alpha: 0.6)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.biotech_rounded, size: 11, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Realtime Metrics Card ─────────────────────────────────────────────────────
+class _ArRealtimeMetricsCard extends StatelessWidget {
+  final int moisture;
+  final double temperature;
+  final double ph;
+  final double ec;
+
+  const _ArRealtimeMetricsCard({
+    required this.moisture,
+    required this.temperature,
+    required this.ph,
+    required this.ec,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final moistureColor = moisture < 75
+        ? Colors.amberAccent
+        : moisture < 60
+            ? Colors.redAccent
+            : Colors.lightBlueAccent;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.15)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.sensors_rounded, size: 13, color: Colors.white54),
+              SizedBox(width: 5),
+              Text(
+                'LIVE ENVIRONMENT',
+                style: TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.8),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _MetricItem(
+                icon: Icons.water_drop_outlined,
+                label: 'Moisture',
+                value: '$moisture%',
+                color: moistureColor,
+              ),
+              _MetricItem(
+                icon: Icons.thermostat_outlined,
+                label: 'Temp',
+                value: '${temperature.toStringAsFixed(1)}°C',
+                color: Colors.orangeAccent,
+              ),
+              _MetricItem(
+                icon: Icons.science_outlined,
+                label: 'pH',
+                value: ph.toStringAsFixed(1),
+                color: Colors.purpleAccent,
+              ),
+              _MetricItem(
+                icon: Icons.bolt_outlined,
+                label: 'EC',
+                value: '${ec.toStringAsFixed(1)} mS',
+                color: Colors.yellowAccent,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MetricItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _MetricItem({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, color: color, size: 18),
+        const SizedBox(height: 4),
+        Text(value, style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 2),
+        Text(label, style: const TextStyle(color: Colors.white54, fontSize: 10)),
+      ],
+    );
+  }
+}
+
+// ── Growth Status Card ────────────────────────────────────────────────────────
+class _GrowthStatusCard extends StatelessWidget {
+  final int growthPercent;
+  final int daysToHarvest;
+  final String stage;
+
+  const _GrowthStatusCard({
+    required this.growthPercent,
+    required this.daysToHarvest,
+    required this.stage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.trending_up_rounded, color: Colors.greenAccent, size: 14),
+              const SizedBox(width: 6),
+              const Text(
+                'GROWTH STATUS',
+                style: TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.8),
+              ),
+              const Spacer(),
+              Text(
+                daysToHarvest <= 0 ? 'Ready to harvest' : '$daysToHarvest days to harvest',
+                style: const TextStyle(color: Colors.white54, fontSize: 11),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: growthPercent / 100.0,
+              minHeight: 10,
+              backgroundColor: Colors.white12,
+              valueColor: const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.white10,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(stage, style: const TextStyle(color: Colors.white70, fontSize: 11)),
+              ),
+              const Spacer(),
+              Text(
+                '$growthPercent% Complete',
+                style: const TextStyle(color: Colors.greenAccent, fontSize: 12, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── AI Recommendation Card ────────────────────────────────────────────────────
+class _AiRecommendationCard extends StatelessWidget {
+  final String recommendation;
+  const _AiRecommendationCard({required this.recommendation});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.3),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.psychology_alt_rounded, color: Colors.white, size: 16),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'AI Recommendation',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  recommendation,
+                  style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ── Irrigation Action Button ──────────────────────────────────────────────────
+class _IrrigationActionButton extends StatelessWidget {
+  final String rackId;
+  final bool isActivated;
+  final VoidCallback onActivate;
+
+  const _IrrigationActionButton({
+    required this.rackId,
+    required this.isActivated,
+    required this.onActivate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height: 56,
+      decoration: BoxDecoration(
+        color: isActivated ? Colors.green.shade700 : const Color(0xFF1565C0),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: (isActivated ? Colors.green : Colors.blue).withValues(alpha: 0.35),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isActivated ? null : onActivate,
+          borderRadius: BorderRadius.circular(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                isActivated ? Icons.check_circle_rounded : Icons.water_drop_rounded,
+                color: Colors.white,
+                size: 22,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                isActivated
+                    ? 'Irrigation Activated — Rack $rackId'
+                    : 'Activate Irrigation — Rack $rackId',
+                style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

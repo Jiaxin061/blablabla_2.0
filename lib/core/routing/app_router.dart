@@ -9,6 +9,7 @@ import '../../features/alerts/alerts_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/rack_tags/rack_tags_screen.dart';
 import '../../features/whatsapp_demo/whatsapp_demo_screen.dart';
+import '../../features/home_copilot/home_copilot_screen.dart';
 import '../widgets/app_scaffold.dart';
 
 /// Route name constants for type-safe navigation.
@@ -22,6 +23,7 @@ abstract final class AppRoutes {
   static const String settings = '/settings';
   static const String whatsappDemo = '/whatsapp-demo';
   static const String rackTags = '/rack-tags';
+  static const String homeCopilot = '/home-copilot';
 }
 
 /// Global router using StatefulShellRoute for persistent bottom nav.
@@ -161,6 +163,22 @@ final GoRouter appRouter = GoRouter(
           return SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+            child: child,
+          );
+        },
+      ),
+    ),
+    // ─── AI Home Copilot (outside shell) ─────────────────────────────────
+    GoRoute(
+      path: AppRoutes.homeCopilot,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        child: const HomeCopilotScreen(),
+        transitionsBuilder: (context, animation, _, child) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.0, 1.0),
               end: Offset.zero,
             ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
             child: child,

@@ -47,7 +47,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
       _WaMessage(
         isMe: false,
         text:
-            'Hi — vBlaFarm assistant for Block 3A.\n\nAsk about any rack, harvest, or irrigation. You can also send a plant photo for a quick check.',
+            'Hi — FarmPilot AI for Block 3A.\n\nAsk about any rack, harvest, or irrigation. You can also send a plant photo for a quick check.',
         time: _formatTime(DateTime.now()),
       ),
     );
@@ -134,7 +134,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
     // ── Greetings ──────────────────────────────────────────────────────────────
     if (q.contains('hello') || q.contains(' hi ') || q == 'hi' || q.contains('hey')) {
       return (
-        text: 'Hey! vBlaFarm AI here for Block 3A. All 3 racks are online.\n'
+        text: 'Hey! FarmPilot AI here for Block 3A. All 3 racks are online.\n'
             'Ask me about rack status, harvest dates, irrigation, or plant health.',
         followUp: null,
         pendingAction: null,
@@ -282,10 +282,10 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
       final c = MockFarmData.rackById('C');
       return (
         text: 'Current harvest predictions:\n\n'
-            '🌿 Rack A (${a['crop']}) — Ready NOW\n'
-            '🥬 Rack B (${b['crop']}) — ${b['daysToHarvest']} days\n'
-            '🌱 Rack C (${c['crop']}) — ${c['daysToHarvest']} days\n\n'
-            'Rack A is at optimal harvest parameters — schedule pickup soon.',
+            '🌿 Rack A (${a['crop']}) — ${a['daysToHarvest']} days\n'
+            '🌱 Rack B (${b['crop']}) — ${b['daysToHarvest']} days\n'
+            '🥬 Rack C (${c['crop']}) — ${c['daysToHarvest']} days\n\n'
+            'Rack A is approaching harvest — schedule pickup soon.',
         followUp: 'Would you like me to set calendar reminders for these harvest dates?',
         pendingAction: 'harvest_reminder',
       );
@@ -342,8 +342,8 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
       return (
         text: 'All racks are operational.\n\n'
             '✅ Rack A: Healthy (Butterhead Lettuce)\n'
-            '⚠️ Rack B: 1 warning — L3-P02 nitrogen deficiency\n'
-            '✅ Rack C: Healthy (Basil)\n\n'
+            '⚠️ Rack B: Warning — L4 & L5 moisture low, pH elevated\n'
+            '✅ Rack C: Healthy (Spinach)\n\n'
             'Farm health score: ${MockFarmData.farmMetrics['healthScore']}/100.',
         followUp: null,
         pendingAction: null,
@@ -570,7 +570,7 @@ class _WhatsAppDemoScreenState extends State<WhatsAppDemoScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'vBlaFarm',
+              'FarmPilot AI',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
             ),
             Text(
