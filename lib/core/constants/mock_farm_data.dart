@@ -143,6 +143,74 @@ abstract final class MockFarmData {
     },
   ];
 
+  // ─── Tag → Single Plant Mapping ───────────────────────────────────────────
+  static const Map<int, Map<String, dynamic>> tagToPlant = {
+    0: {
+      'plantId': 'B-L3-P01',
+      'rackId': 'B',
+      'level': 3,
+      'health': 92,
+      'status': 'healthy',
+      'issue': '',
+      'confidence': 0,
+      'recommendation': '',
+      'zoomAsset': 'assets/images/zoom3.png',
+      'statusAsset': 'assets/images/healthy.png',
+      'crop': 'Butterhead Lettuce',
+      'stage': 'Mature',
+      'daysToHarvest': 5,
+    },
+    1: {
+      'plantId': 'B-L3-P02',
+      'rackId': 'B',
+      'level': 3,
+      'health': 78,
+      'status': 'warning',
+      'issue': 'Nitrogen Deficiency',
+      'confidence': 91,
+      'recommendation': 'Increase nutrient concentration by 10%. Check EC level target 1.8–2.2.',
+      'zoomAsset': 'assets/images/zoom3.png',
+      'statusAsset': 'assets/images/unhealthy.png',
+      'crop': 'Butterhead Lettuce',
+      'stage': 'Vegetative',
+      'daysToHarvest': 12,
+    },
+    2: {
+      'plantId': 'B-L3-P04',
+      'rackId': 'B',
+      'level': 3,
+      'health': 45,
+      'status': 'critical',
+      'issue': 'Possible Disease',
+      'confidence': 87,
+      'recommendation': 'Isolate plant immediately. Inspect for fungal symptoms. Consult agronomist.',
+      'zoomAsset': 'assets/images/zoom3.png',
+      'statusAsset': 'assets/images/unhealthy.png',
+      'crop': 'Butterhead Lettuce',
+      'stage': 'Early Vegetative',
+      'daysToHarvest': 18,
+    },
+  };
+
+  // ─── Rack B Plant-Level Data ──────────────────────────────────────────────
+  // Only levels 3 and 5 have individual plant monitoring.
+  static const Map<int, List<Map<String, dynamic>>> rackBPlantLevels = {
+    3: [
+      {'id': 'B-L3-P01', 'health': 92, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom3.png'},
+      {'id': 'B-L3-P02', 'health': 78, 'status': 'warning', 'issue': 'Nitrogen Deficiency', 'confidence': 91, 'recommendation': 'Increase nutrient concentration by 10%', 'zoomAsset': 'assets/images/zoom3.png'},
+      {'id': 'B-L3-P03', 'health': 95, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom3.png'},
+      {'id': 'B-L3-P04', 'health': 45, 'status': 'critical', 'issue': 'Possible Disease', 'confidence': 87, 'recommendation': 'Isolate plant and consult agronomist', 'zoomAsset': 'assets/images/zoom3.png'},
+      {'id': 'B-L3-P05', 'health': 88, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom3.png'},
+    ],
+    5: [
+      {'id': 'B-L5-P01', 'health': 96, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom5.png'},
+      {'id': 'B-L5-P02', 'health': 91, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom5.png'},
+      {'id': 'B-L5-P03', 'health': 72, 'status': 'warning', 'issue': 'Nitrogen Deficiency', 'confidence': 85, 'recommendation': 'Adjust pH and add nitrogen supplement', 'zoomAsset': 'assets/images/zoom5.png'},
+      {'id': 'B-L5-P04', 'health': 89, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom5.png'},
+      {'id': 'B-L5-P05', 'health': 93, 'status': 'healthy', 'issue': '', 'confidence': 0, 'recommendation': '', 'zoomAsset': 'assets/images/zoom5.png'},
+    ],
+  };
+
   // ─── Mock Chat Responses ──────────────────────────────────────────────────
   static const Map<String, String> chatWorkflows = {
     'rack b': 'Rack B is currently showing moisture instability at 72% (optimal: 82%). I\'ve already activated an irrigation cycle. pH is slightly elevated at 6.8 — I\'m adjusting the nutrient solution mix. Romaine lettuce in this rack is 3 days from harvest. Recommend scheduling pickup now.',

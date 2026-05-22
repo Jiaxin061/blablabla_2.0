@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../core/theme/theme.dart';
-import '../../core/widgets/widgets.dart';
 import '../../core/constants/mock_farm_data.dart';
+import '../../core/services/voice_recorder_service.dart';
+import '../../core/theme/theme.dart';
+import '../../core/widgets/voice_message_tile.dart';
+import '../../core/widgets/widgets.dart';
 
 class ChatScreen extends StatefulWidget {
   final String? initialQuery;
@@ -94,6 +96,54 @@ class _ChatScreenState extends State<ChatScreen> {
       });
       _scrollToBottom();
     }
+  }
+
+  Future<void> _sendVoiceMessage(String path, int durationSeconds) async {
+    setState(() {
+      _messages.add(
+        _ChatMessage(
+          role: 'user',
+          text: '',
+          voicePath: path,
+          voiceDurationSeconds: durationSeconds,
+        ),
+      );
+      _isTyping = true;
+    });
+    _scrollToBottom();
+
+    await Future.delayed(const Duration(milliseconds: 1400));
+
+    if (!mounted) return;
+    setState(() {
+      _messages.add(
+        _ChatMessage(
+          role: 'ai',
+          text:
+              'I received your voice message (${durationSeconds}s). '
+              'Based on your question, here is the latest Rack B status.',
+          sections: [
+            const _AISection(
+              title: 'Rack B snapshot',
+              content:
+                  'Moisture is recovering after the last irrigation pulse. '
+                  'Temperature and pH remain within target range.',
+              icon: Icons.mic_rounded,
+            ),
+          ],
+          actions: ['How is Rack B today?', 'Diagnose plant health', 'Suggest product?'],
+        ),
+      );
+      _isTyping = false;
+    });
+    _scrollToBottom();
+  }
+
+  void _showVoiceUnavailableSnackBar() {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Voice recording is available on mobile only')),
+    );
   }
 
   _ChatMessage _getAIResponse(String query) {
@@ -411,6 +461,8 @@ class _ChatScreenState extends State<ChatScreen> {
           _ChatInputBar(
             controller: _controller,
             onSend: () => _sendMessage(_controller.text),
+            onVoiceRecorded: _sendVoiceMessage,
+            onVoiceUnavailable: _showVoiceUnavailableSnackBar,
           ),
         ],
       ),
@@ -425,6 +477,9 @@ class _ChatMessage {
   final List<_NearbySupplyShop>? nearbyShops;
   final List<_ProductRecommendation>? products;
   final List<String>? actions;
+  final String? voicePath;
+  final int? voiceDurationSeconds;
+
   _ChatMessage({
     required this.role,
     required this.text,
@@ -432,7 +487,12 @@ class _ChatMessage {
     this.nearbyShops,
     this.products,
     this.actions,
+    this.voicePath,
+    this.voiceDurationSeconds,
   });
+
+  bool get isVoiceMessage =>
+      voiceDurationSeconds != null && voiceDurationSeconds! > 0;
 }
 
 class _AISection {
@@ -589,14 +649,24 @@ class _ChatBubble extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.text,
-                    style: AppTypography.bodyMd.copyWith(
-                      color: isAI ? AppColors.onSurface : Colors.white,
-                      fontSize: 15,
-                      height: 1.5,
+                  if (message.isVoiceMessage)
+                    VoiceMessageTile(
+                      durationSeconds: message.voiceDurationSeconds!,
+                      filePath: message.voicePath,
+                      isOutgoing: !isAI,
+                      accentColor: isAI ? AppColors.primary : AppColors.secondary,
+                      iconColor: Colors.white,
+                      labelColor: isAI ? AppColors.onSurface : Colors.white,
+                    )
+                  else if (message.text.isNotEmpty)
+                    Text(
+                      message.text,
+                      style: AppTypography.bodyMd.copyWith(
+                        color: isAI ? AppColors.onSurface : Colors.white,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
                     ),
-                  ),
                   if (isAI && sections.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     ...sections.map(
@@ -946,14 +1016,23 @@ class _QuickSuggestions extends StatelessWidget {
 class _ChatInputBar extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
-  const _ChatInputBar({required this.controller, required this.onSend});
+  final void Function(String path, int durationSeconds) onVoiceRecorded;
+  final VoidCallback onVoiceUnavailable;
+
+  const _ChatInputBar({
+    required this.controller,
+    required this.onSend,
+    required this.onVoiceRecorded,
+    required this.onVoiceUnavailable,
+  });
 
   @override
   State<_ChatInputBar> createState() => _ChatInputBarState();
 }
 
 class _ChatInputBarState extends State<_ChatInputBar> {
-  bool _isListening = false;
+  final _recorder = VoiceRecorderService.instance;
+  bool _isRecording = false;
 
   @override
   void initState() {
@@ -971,21 +1050,39 @@ class _ChatInputBarState extends State<_ChatInputBar> {
     setState(() {});
   }
 
-  void _handleVoice() async {
-    if (_isListening) return;
+  Future<void> _handleVoice() async {
+    if (!_recorder.isSupported) {
+      widget.onVoiceUnavailable();
+      return;
+    }
 
-    setState(() {
-      _isListening = true;
-    });
+    if (_isRecording) {
+      try {
+        final result = await _recorder.stop();
+        if (!mounted) return;
+        setState(() => _isRecording = false);
+        if (result != null) {
+          widget.onVoiceRecorded(result.path, result.durationSeconds);
+        }
+      } catch (e) {
+        if (!mounted) return;
+        setState(() => _isRecording = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not save recording: $e')),
+        );
+      }
+      return;
+    }
 
-    // Simulate listening delay
-    await Future.delayed(const Duration(milliseconds: 2000));
-
-    if (mounted) {
-      setState(() {
-        _isListening = false;
-        widget.controller.text = 'What is the status of Rack B?';
-      });
+    try {
+      await _recorder.start();
+      if (!mounted) return;
+      setState(() => _isRecording = true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('$e')),
+      );
     }
   }
 
@@ -1008,9 +1105,9 @@ class _ChatInputBarState extends State<_ChatInputBar> {
             child: TextField(
               controller: widget.controller,
               decoration: InputDecoration(
-                hintText: _isListening ? 'Listening...' : 'Ask about your farm...',
+                hintText: _isRecording ? 'Recording… tap mic to send' : 'Ask about your farm...',
                 hintStyle: AppTypography.bodyMd.copyWith(
-                  color: _isListening ? AppColors.primary : AppColors.onSurfaceVariant,
+                  color: _isRecording ? AppColors.primary : AppColors.onSurfaceVariant,
                   fontSize: 15,
                 ),
                 border: OutlineInputBorder(
@@ -1040,9 +1137,9 @@ class _ChatInputBarState extends State<_ChatInputBar> {
               duration: const Duration(milliseconds: 200),
               width: 48, height: 48,
               decoration: BoxDecoration(
-                color: _isListening ? AppColors.secondary : AppColors.primary,
+                color: _isRecording ? AppColors.secondary : AppColors.primary,
                 shape: BoxShape.circle,
-                boxShadow: _isListening ? [
+                boxShadow: _isRecording ? [
                   BoxShadow(
                     color: AppColors.secondary.withValues(alpha: 0.4),
                     blurRadius: 12,
@@ -1051,8 +1148,8 @@ class _ChatInputBarState extends State<_ChatInputBar> {
                 ] : null,
               ),
               child: Icon(
-                _isListening
-                    ? Icons.graphic_eq_rounded
+                _isRecording
+                    ? Icons.stop_rounded
                     : (hasText ? Icons.send_rounded : Icons.mic_rounded),
                 color: Colors.white,
                 size: 22,

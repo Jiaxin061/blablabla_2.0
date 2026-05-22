@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +10,7 @@ import '../../core/routing/app_router.dart';
 import '../../core/services/apriltag_platform_detector.dart';
 import '../../core/services/tag_registry_provider.dart';
 import '../../core/theme/theme.dart';
+import '../digital_twin/widgets/plant_level_grid.dart';
 import 'widgets/ar_camera_scanner.dart';
 
 class ArScanScreen extends ConsumerStatefulWidget {
@@ -24,7 +28,11 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
   bool _isScanning = false;
   int? _detectedTagId;
   Map<String, dynamic>? _rackData;
+  Map<String, dynamic>? _plantData;
+  bool _isPlantScan = false;
   String? _scanError;
+  bool _isSupported = false;
+  bool _checkingSupport = true;
 
   @override
   void initState() {
@@ -37,6 +45,17 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
       CurvedAnimation(parent: _scanCtrl, curve: Curves.easeInOut),
     );
     Future.microtask(() => ref.read(tagRegistryProvider.notifier).load());
+    _checkSupport();
+  }
+
+  Future<void> _checkSupport() async {
+    final supported = await AprilTagPlatformDetector.checkSupported();
+    if (mounted) {
+      setState(() {
+        _isSupported = supported;
+        _checkingSupport = false;
+      });
+    }
   }
 
   @override
@@ -44,6 +63,8 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     _scanCtrl.dispose();
     super.dispose();
   }
+
+  bool get _useCameraScan => !kIsWeb && Platform.isAndroid;
 
   Map<int, String> _effectiveTagMap(TagRegistryState registry) {
     if (registry.isReady && registry.tagToRack.isNotEmpty) {
@@ -61,11 +82,12 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
   Future<void> _completeScan(int tagId) async {
     if (_isScanning) return;
 
+    final plantData = MockFarmData.tagToPlant[tagId];
     final registry = ref.read(tagRegistryProvider);
     final tagMap = _effectiveTagMap(registry);
-    final rackData = _rackDataForTag(tagId, tagMap);
+    final rackData = plantData == null ? _rackDataForTag(tagId, tagMap) : null;
 
-    if (rackData == null) {
+    if (plantData == null && rackData == null) {
       setState(() {
         _scanError = 'Tag $tagId is not assigned to a rack. Open Settings → Rack Tags.';
       });
@@ -91,6 +113,8 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
       _isScanning = false;
       _scanned = true;
       _detectedTagId = tagId;
+      _isPlantScan = plantData != null;
+      _plantData = plantData;
       _rackData = rackData;
     });
     _scanCtrl.stop();
@@ -102,6 +126,8 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
       _calendarAdded = false;
       _detectedTagId = null;
       _rackData = null;
+      _plantData = null;
+      _isPlantScan = false;
       _scanError = null;
       _isScanning = false;
     });
@@ -110,12 +136,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
       ..repeat(reverse: true);
   }
 
-  void _onClosePressed() {
-    if (_scanned) {
-      _resetScan();
-      return;
-    }
-  }
+  void _onClosePressed() => _resetScan();
 
   void _showCalendarSuccess() {
     setState(() => _calendarAdded = true);
@@ -163,7 +184,7 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
     final daysToHarvest = rack?['daysToHarvest'] as int? ?? 0;
     final rackId = rack?['id'] as String? ?? 'B';
 
-    final useCamera = !_scanned && AprilTagPlatformDetector.isSupported;
+    final useCamera = !_scanned && !_checkingSupport && _useCameraScan;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -192,16 +213,17 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          _scanned ? Icons.close_rounded : Icons.close_rounded,
-                          color: Colors.white,
-                          size: 28,
+                      if (_scanned)
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          tooltip: 'Close results and scan again',
+                          onPressed: _onClosePressed,
                         ),
-                        tooltip: _scanned ? 'Close results and scan again' : 'Close',
-                        onPressed: _onClosePressed,
-                      ),
-                      const SizedBox(width: 4),
+                      if (_scanned) const SizedBox(width: 4),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -212,7 +234,9 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                             ),
                             Text(
                               _scanned
-                                  ? 'AprilTag $_detectedTagId → Rack $rackId'
+                                  ? _isPlantScan
+                                      ? 'AprilTag $_detectedTagId → Plant ${_plantData?['plantId']}'
+                                      : 'AprilTag $_detectedTagId → Rack $rackId'
                                   : 'Live Analysis Active',
                               style: const TextStyle(
                                 fontSize: 11,
@@ -232,17 +256,19 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                   ),
                 ),
                 Expanded(
-                  child: _scanned && rack != null
-                      ? _buildScanResults(
-                          rackId: rackId,
-                          crop: crop,
-                          stage: stage,
-                          moisture: moisture,
-                          temperature: temperature,
-                          daysToHarvest: daysToHarvest,
-                          tagMap: tagMap,
-                        )
-                      : _buildScanner(tagMap),
+                  child: _scanned && _isPlantScan && _plantData != null
+                      ? _buildPlantScanResult(_plantData!)
+                      : _scanned && rack != null
+                          ? _buildScanResults(
+                              rackId: rackId,
+                              crop: crop,
+                              stage: stage,
+                              moisture: moisture,
+                              temperature: temperature,
+                              daysToHarvest: daysToHarvest,
+                              tagMap: tagMap,
+                            )
+                          : _buildScanner(tagMap),
                 ),
               ],
             ),
@@ -253,11 +279,11 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
   }
 
   Widget _buildScanner(Map<int, String> tagMap) {
-    final useCamera = AprilTagPlatformDetector.isSupported;
+    final useCamera = !_checkingSupport && _useCameraScan;
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final cameraHeight = (constraints.maxHeight * 0.5).clamp(180.0, 300.0);
+        final cameraHeight = (constraints.maxHeight * 0.65).clamp(280.0, 520.0);
 
         return SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -268,25 +294,29 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                 SizedBox(
                   height: cameraHeight,
                   width: double.infinity,
-                  child: useCamera
-                      ? ArCameraScanner(
-                          enabled: !_isScanning,
-                          onTagDetected: _completeScan,
-                          scanOverlay: _ScanFrame(animation: _scanAnim),
+                  child: _checkingSupport && _useCameraScan
+                      ? const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
                         )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            _ScanFrame(animation: _scanAnim),
-                          ],
-                        ),
+                      : useCamera
+                          ? ArCameraScanner(
+                              enabled: !_isScanning,
+                              onTagDetected: _completeScan,
+                              scanOverlay: _ScanFrame(animation: _scanAnim),
+                            )
+                          : Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _ScanFrame(animation: _scanAnim),
+                              ],
+                            ),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   _isScanning
                       ? 'Reading AprilTag…'
                       : useCamera
-                          ? 'Hold printed tag inside the frame'
+                          ? 'Point camera at printed AprilTag in the frame'
                           : 'Point camera at rack tag',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
@@ -303,19 +333,238 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
                     style: const TextStyle(color: Colors.orangeAccent, fontSize: 13),
                   ),
                 ],
-                const SizedBox(height: 10),
-                Text(
-                  useCamera ? 'Or tap a tag manually' : 'Tap the tag you are scanning',
-                  style: AppTypography.caption.copyWith(color: Colors.white70),
-                ),
-                const SizedBox(height: 8),
-                _buildTagChips(showActiveState: false),
+                if (!_useCameraScan) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    'Tap the tag you are scanning',
+                    style: AppTypography.caption.copyWith(color: Colors.white70),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildTagChips(showActiveState: false),
+                ] else if (!_isSupported) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    'Tag templates failed to load. Restart the app or open Rack Tags.',
+                    textAlign: TextAlign.center,
+                    style: AppTypography.caption.copyWith(color: Colors.orangeAccent),
+                  ),
+                ],
                 const SizedBox(height: 12),
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildPlantScanResult(Map<String, dynamic> plant) {
+    final status = plant['status'] as String;
+    final health = plant['health'] as int;
+    final issue = plant['issue'] as String;
+    final confidence = plant['confidence'] as int;
+    final recommendation = plant['recommendation'] as String;
+    final crop = plant['crop'] as String;
+    final stage = plant['stage'] as String;
+    final daysToHarvest = plant['daysToHarvest'] as int;
+    final plantId = plant['plantId'] as String;
+    final rackId = plant['rackId'] as String;
+    final zoomAsset = plant['zoomAsset'] as String;
+    final statusAsset = plant['statusAsset'] as String;
+
+    final Color statusColor = switch (status) {
+      'healthy' => Colors.greenAccent,
+      'warning' => Colors.amberAccent,
+      _ => Colors.redAccent,
+    };
+    final Color progressColor = switch (status) {
+      'healthy' => Colors.green,
+      'warning' => Colors.amber,
+      _ => Colors.red,
+    };
+    final Color issueBg = switch (status) {
+      'warning' => Colors.amber.withValues(alpha: 0.15),
+      _ => Colors.red.withValues(alpha: 0.15),
+    };
+    final Color issueBorder = switch (status) {
+      'warning' => Colors.amber.withValues(alpha: 0.5),
+      _ => Colors.red.withValues(alpha: 0.5),
+    };
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Zoom image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppRadius.xl),
+            child: Image.asset(
+              zoomAsset,
+              height: 220,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                height: 220,
+                color: Colors.white10,
+                child: const Center(child: Icon(Icons.eco_outlined, color: Colors.white38, size: 48)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          // Status row
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                child: Image.asset(
+                  statusAsset,
+                  width: 72,
+                  height: 72,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: Colors.white10,
+                      borderRadius: BorderRadius.circular(AppRadius.lg),
+                    ),
+                    child: const Icon(Icons.image_not_supported_outlined, color: Colors.white38),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      plantId,
+                      style: AppTypography.headlineMd.copyWith(color: Colors.white, fontSize: 18),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(AppRadius.full),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.6)),
+                      ),
+                      child: Text(
+                        '$health% Health',
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Health bar
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Health Score: $health%',
+                style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.full),
+                child: LinearProgressIndicator(
+                  value: health / 100.0,
+                  minHeight: 8,
+                  backgroundColor: Colors.white12,
+                  valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                ),
+              ),
+            ],
+          ),
+          if (issue.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: issueBg,
+                borderRadius: BorderRadius.circular(AppRadius.xl),
+                border: Border.all(color: issueBorder),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    issue,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'AI Confidence: $confidence%',
+                    style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                  if (recommendation.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      recommendation,
+                      style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 16),
+          // Stats row
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _PlantStatItem(label: 'Crop', value: crop.split(' ').last),
+                const _PlantStatDivider(),
+                _PlantStatItem(label: 'Stage', value: stage),
+                const _PlantStatDivider(),
+                _PlantStatItem(
+                  label: 'Harvest',
+                  value: daysToHarvest <= 0 ? 'Now' : '${daysToHarvest}d',
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          // New scan button
+          OutlinedButton.icon(
+            onPressed: _resetScan,
+            icon: const Icon(Icons.qr_code_scanner_rounded, size: 20),
+            label: const Text('New scan'),
+            style: OutlinedButton.styleFrom(
+              foregroundColor: Colors.white,
+              side: const BorderSide(color: Colors.white70),
+              minimumSize: const Size(double.infinity, 48),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.xl)),
+            ),
+          ),
+          const SizedBox(height: 12),
+          _OperationalButton(
+            label: 'View Rack $rackId',
+            icon: Icons.account_tree_outlined,
+            onPressed: () => context.push('${AppRoutes.farmOverview}/digital-twin/$rackId'),
+          ),
+          const SizedBox(height: 24),
+        ],
+      ),
     );
   }
 
@@ -402,13 +651,30 @@ class _ArScanScreenState extends ConsumerState<ArScanScreen> with TickerProvider
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            'Scan a different tag',
-            style: AppTypography.caption.copyWith(color: Colors.white70),
-          ),
-          const SizedBox(height: 8),
-          _buildTagChips(showActiveState: true),
-          const SizedBox(height: 12),
+          if (rackId == 'B') ...[
+            const SizedBox(height: 4),
+            Text(
+              'Plant Monitor',
+              style: AppTypography.headlineMd.copyWith(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 12),
+            PlantLevelGrid(level: 3),
+            const SizedBox(height: 16),
+            PlantLevelGrid(level: 5),
+            const SizedBox(height: 8),
+          ],
+          if (!_useCameraScan) ...[
+            Text(
+              'Scan a different tag',
+              style: AppTypography.caption.copyWith(color: Colors.white70),
+            ),
+            const SizedBox(height: 8),
+            _buildTagChips(showActiveState: true),
+            const SizedBox(height: 12),
+          ],
           OutlinedButton.icon(
             onPressed: _resetScan,
             icon: const Icon(Icons.qr_code_scanner_rounded, size: 20),
@@ -439,7 +705,7 @@ class _TagScanChip extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
 
-  _TagScanChip({
+  const _TagScanChip({
     required this.tagId,
     required this.isLoading,
     this.isActive = false,
@@ -782,6 +1048,39 @@ class _OperationalButton extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _PlantStatItem extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _PlantStatItem({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          label.toUpperCase(),
+          style: const TextStyle(color: Colors.white54, fontSize: 10, fontWeight: FontWeight.w600, letterSpacing: 0.8),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
+  }
+}
+
+class _PlantStatDivider extends StatelessWidget {
+  const _PlantStatDivider();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 32, color: Colors.white12);
   }
 }
 

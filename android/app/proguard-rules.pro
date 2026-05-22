@@ -1,4 +1,3 @@
-# WPILib AprilTag + OpenCV (required for release R8 minification)
--keep class edu.wpi.first.** { *; }
+# OpenCV (ArUco / AprilTag detection)
 -keep class org.opencv.** { *; }
--dontwarn edu.wpi.first.**
+-dontwarn org.opencv.**

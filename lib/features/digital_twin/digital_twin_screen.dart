@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/theme.dart';
 import '../../core/widgets/widgets.dart';
 import '../../core/constants/mock_farm_data.dart';
+import 'widgets/plant_level_grid.dart';
 
 class DigitalTwinScreen extends StatelessWidget {
   final String rackId;
@@ -35,6 +36,18 @@ class DigitalTwinScreen extends StatelessWidget {
                     rackData: _rackData,
                     isHealthyRack: _isHealthyRack,
                   ),
+                  if (rackId.toUpperCase() == 'B') ...[
+                    const SizedBox(height: 28),
+                    Text('RACK LEVEL STATUS', style: AppTypography.sectionLabel),
+                    const SizedBox(height: 16),
+                    _RackLevelStatusCard(),
+                    const SizedBox(height: 28),
+                    Text('PLANT-LEVEL MONITORING', style: AppTypography.sectionLabel),
+                    const SizedBox(height: 16),
+                    PlantLevelGrid(level: 3),
+                    const SizedBox(height: 20),
+                    PlantLevelGrid(level: 5),
+                  ],
                   const SizedBox(height: 24),
                   _TrendSection(),
                   const SizedBox(height: 24),
@@ -687,6 +700,333 @@ class _OptCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Rack Level Status card — Level 2–5 rows for Rack B
+// ─────────────────────────────────────────────────────────────────────────────
+
+class _RackLevelStatusCard extends StatelessWidget {
+  const _RackLevelStatusCard();
+
+  static const _levels = [
+    _LevelMeta(level: 2, hasIssue: false, issueLabel: 'All Good'),
+    _LevelMeta(level: 3, hasIssue: true,  issueLabel: 'Nitrogen Deficiency'),
+    _LevelMeta(level: 4, hasIssue: false, issueLabel: 'All Good'),
+    _LevelMeta(level: 5, hasIssue: false, issueLabel: 'All Good'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.grey.shade100),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 12, offset: const Offset(0, 4))],
+      ),
+      child: Column(
+        children: List.generate(_levels.length, (i) {
+          final meta = _levels[i];
+          final isLast = i == _levels.length - 1;
+          final tappable = meta.level == 3 || meta.level == 5;
+          return _LevelRow(meta: meta, isLast: isLast, tappable: tappable);
+        }),
+      ),
+    );
+  }
+}
+
+class _LevelMeta {
+  final int level;
+  final bool hasIssue;
+  final String issueLabel;
+  const _LevelMeta({required this.level, required this.hasIssue, required this.issueLabel});
+}
+
+class _LevelRow extends StatelessWidget {
+  final _LevelMeta meta;
+  final bool isLast;
+  final bool tappable;
+  const _LevelRow({required this.meta, required this.isLast, required this.tappable});
+
+  Color get _badgeColor => meta.hasIssue ? const Color(0xFFF57F17) : AppColors.primary;
+  String get _badgeText => meta.hasIssue ? 'Action Needed' : 'Healthy';
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        if (tappable) {
+          _showLevelDetail(context);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Individual plant monitoring not available for this level'),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: const Color(0xFF38523A),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+          );
+        }
+      },
+      borderRadius: BorderRadius.vertical(
+        top: meta.level == 2 ? const Radius.circular(24) : Radius.zero,
+        bottom: isLast ? const Radius.circular(24) : Radius.zero,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          border: isLast ? null : Border(bottom: BorderSide(color: Colors.grey.shade100)),
+        ),
+        child: Row(
+          children: [
+            // Level badge
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: _badgeColor.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Center(
+                child: Text(
+                  'L${meta.level}',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: _badgeColor,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            // Level label
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Level ${meta.level}',
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    meta.issueLabel,
+                    style: AppTypography.caption.copyWith(fontSize: 11, color: _badgeColor),
+                  ),
+                ],
+              ),
+            ),
+            // Status badge
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: _badgeColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: _badgeColor.withValues(alpha: 0.25)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    meta.hasIssue ? Icons.warning_amber_rounded : Icons.check_circle_outline_rounded,
+                    size: 12,
+                    color: _badgeColor,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    _badgeText,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: _badgeColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (tappable) ...[
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.onSurfaceVariant),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showLevelDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _LevelDetailSheet(level: meta.level, hasIssue: meta.hasIssue, issueLabel: meta.issueLabel),
+    );
+  }
+}
+
+class _LevelDetailSheet extends StatelessWidget {
+  final int level;
+  final bool hasIssue;
+  final String issueLabel;
+  const _LevelDetailSheet({required this.level, required this.hasIssue, required this.issueLabel});
+
+  String get _zoomAsset => 'assets/images/zoom$level.png';
+  String get _statusAsset => hasIssue ? 'assets/images/unhealthy.png' : 'assets/images/healthy.png';
+  String get _headerText => 'Level $level — $issueLabel';
+  Color get _statusColor => hasIssue ? const Color(0xFFF57F17) : AppColors.primary;
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.88,
+      minChildSize: 0.5,
+      maxChildSize: 0.95,
+      builder: (_, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFF8F9F4),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          child: ListView(
+            controller: scrollController,
+            padding: EdgeInsets.zero,
+            children: [
+              // Drag handle
+              const SizedBox(height: 12),
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Zoom image — full width, ~220px
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    _zoomAsset,
+                    height: 220,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      height: 220,
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.image_outlined, size: 36, color: Colors.grey.shade400),
+                            const SizedBox(height: 8),
+                            Text('zoom$level.png', style: TextStyle(color: Colors.grey.shade500, fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Status image + level header row
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Status image thumbnail
+                    Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: _statusColor.withValues(alpha: 0.25), width: 1.5),
+                      ),
+                      clipBehavior: Clip.hardEdge,
+                      child: Image.asset(
+                        _statusAsset,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: _statusColor.withValues(alpha: 0.08),
+                          child: Icon(
+                            hasIssue ? Icons.warning_amber_rounded : Icons.eco_outlined,
+                            size: 28,
+                            color: _statusColor.withValues(alpha: 0.5),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Level header
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _headerText,
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            decoration: BoxDecoration(
+                              color: _statusColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(color: _statusColor.withValues(alpha: 0.25)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  hasIssue ? Icons.warning_amber_rounded : Icons.check_circle_outline_rounded,
+                                  size: 12,
+                                  color: _statusColor,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  hasIssue ? 'Action Needed' : 'Healthy',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    color: _statusColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Plant-level grid
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text('INDIVIDUAL PLANT MONITOR', style: AppTypography.sectionLabel),
+              ),
+              const SizedBox(height: 14),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: PlantLevelGrid(level: level),
+              ),
+              SizedBox(height: MediaQuery.of(context).padding.bottom + 24),
+            ],
+          ),
+        );
+      },
     );
   }
 }

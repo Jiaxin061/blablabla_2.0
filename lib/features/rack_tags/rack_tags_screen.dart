@@ -423,38 +423,27 @@ class _TagRegistryCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: _RegistryActionButton(
+                          label: 'Detail',
+                          icon: Icons.data_object_rounded,
                           onPressed: onViewJson,
-                          icon: const Icon(Icons.data_object_rounded, size: 18),
-                          label: const Text('Detail'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: OutlinedButton.icon(
+                        child: _RegistryActionButton(
+                          label: 'Print',
+                          icon: Icons.print_rounded,
                           onPressed: onPrint,
-                          icon: const Icon(Icons.print_rounded, size: 18),
-                          label: const Text('Print'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                          ),
                         ),
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: FilledButton.icon(
+                        child: _RegistryActionButton(
+                          label: 'Share',
+                          icon: Icons.ios_share_rounded,
                           onPressed: onShare,
-                          icon: const Icon(Icons.ios_share_rounded, size: 18),
-                          label: const Text('Share'),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            padding: const EdgeInsets.symmetric(vertical: 10),
-                          ),
+                          filled: true,
                         ),
                       ),
                     ],
@@ -465,6 +454,67 @@ class _TagRegistryCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _RegistryActionButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool filled;
+
+  const _RegistryActionButton({
+    required this.label,
+    required this.icon,
+    required this.onPressed,
+    this.filled = false,
+  });
+
+  static const Size _buttonSize = Size(double.infinity, 44);
+
+  @override
+  Widget build(BuildContext context) {
+    final shape = RoundedRectangleBorder(borderRadius: AppRadius.mdRadius);
+    final child = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(icon, size: 18),
+        const SizedBox(width: 6),
+        Flexible(
+          child: Text(
+            label,
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+
+    if (filled) {
+      return FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          minimumSize: _buttonSize,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          shape: shape,
+        ),
+        child: child,
+      );
+    }
+
+    return OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        minimumSize: _buttonSize,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        side: const BorderSide(color: AppColors.primary),
+        shape: shape,
+      ),
+      child: child,
     );
   }
 }

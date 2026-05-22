@@ -6,7 +6,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/services/apriltag_platform_detector.dart';
 
-/// Live camera preview with native AprilTag detection (Android).
+/// Live camera preview with AprilTag detection (Dart image match on Android).
 class ArCameraScanner extends StatefulWidget {
   final void Function(int tagId) onTagDetected;
   final Widget scanOverlay;
@@ -26,10 +26,11 @@ class ArCameraScanner extends StatefulWidget {
 class _ArCameraScannerState extends State<ArCameraScanner> {
   CameraController? _controller;
   bool _initializing = true;
+  bool _disposing = false;
   String? _error;
   bool _processingFrame = false;
   DateTime _lastFrameAt = DateTime.fromMillisecondsSinceEpoch(0);
-  static const _frameInterval = Duration(milliseconds: 350);
+  static const _frameInterval = Duration(milliseconds: 400);
 
   @override
   void initState() {
@@ -49,7 +50,17 @@ class _ArCameraScannerState extends State<ArCameraScanner> {
 
   @override
   void dispose() {
-    unawaited(_disposeCamera());
+    _disposing = true;
+    final controller = _controller;
+    _controller = null;
+    if (controller != null) {
+      if (controller.value.isStreamingImages) {
+        try {
+          controller.stopImageStream();
+        } catch (_) {}
+      }
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -88,7 +99,7 @@ class _ArCameraScannerState extends State<ArCameraScanner> {
 
       final controller = CameraController(
         back,
-        ResolutionPreset.medium,
+        ResolutionPreset.low,
         enableAudio: false,
         imageFormatGroup: ImageFormatGroup.yuv420,
       );
@@ -131,25 +142,17 @@ class _ArCameraScannerState extends State<ArCameraScanner> {
     } catch (_) {}
   }
 
-  Future<void> _disposeCamera() async {
-    await _stopStream();
-    final controller = _controller;
-    _controller = null;
-    if (controller != null) {
-      await controller.dispose();
-    }
-  }
-
   Future<void> _onCameraImage(CameraImage image) async {
-    if (!widget.enabled || _processingFrame) return;
+    if (_disposing || !mounted || !widget.enabled || _processingFrame) return;
     final now = DateTime.now();
     if (now.difference(_lastFrameAt) < _frameInterval) return;
     _lastFrameAt = now;
     _processingFrame = true;
     try {
       final ids = await AprilTagPlatformDetector.detectFromCameraImage(image);
-      if (!mounted || !widget.enabled || ids.isEmpty) return;
+      if (_disposing || !mounted || !widget.enabled || ids.isEmpty) return;
       await _stopStream();
+      if (_disposing || !mounted) return;
       widget.onTagDetected(ids.first);
     } finally {
       _processingFrame = false;

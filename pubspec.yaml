@@ -26,8 +26,11 @@ dependencies:
 
   # Camera / Image Picker
   camera: ^0.11.0+2
+  image: ^4.5.4
   image_picker: ^1.1.2
   permission_handler: ^11.3.1
+  record: ^6.2.0
+  audioplayers: ^6.4.0
 
   # URL Launcher
   url_launcher: ^6.3.1
@@ -36,6 +39,9 @@ dependencies:
   pdf: ^3.11.1
   printing: ^5.13.4
   path_provider: ^2.1.5
+
+  # HTTP client
+  http: ^1.2.2
 
   # Utilities
   intl: ^0.20.2

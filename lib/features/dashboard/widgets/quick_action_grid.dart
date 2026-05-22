@@ -173,11 +173,15 @@ class _SecondaryAction extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primary, size: 22),
             const SizedBox(width: 10),
-            Text(
-              label,
-              style: AppTypography.labelLg.copyWith(
-                color: AppColors.onSurface,
-                fontWeight: FontWeight.w700,
+            Expanded(
+              child: Text(
+                label,
+                style: AppTypography.labelLg.copyWith(
+                  color: AppColors.onSurface,
+                  fontWeight: FontWeight.w700,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],

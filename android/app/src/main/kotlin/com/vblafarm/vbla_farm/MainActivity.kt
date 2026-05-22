@@ -14,7 +14,11 @@ class MainActivity : FlutterActivity() {
 
     override fun onCreate(savedInstanceState: android.os.Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!OpenCVLoader.initDebug()) {
+        // initLocal() is available in org.opencv:opencv:4.9.0+; works without OpenCV Manager app.
+        if (OpenCVLoader.initLocal()) {
+            OpenCvNative.markLoaded()
+            Log.i(TAG, "OpenCV loaded via initLocal()")
+        } else {
             Log.e(TAG, "OpenCV failed to initialize")
         }
     }

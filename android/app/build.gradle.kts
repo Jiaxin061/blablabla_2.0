@@ -48,9 +48,7 @@ flutter {
 }
 
 dependencies {
-    val wpilibVersion = "2024.3.2"
-    // apriltag-java JNI needs wpiutil RuntimeLoader at runtime (R8 release build)
-    implementation("edu.wpi.first.apriltag:apriltag-java:$wpilibVersion")
-    implementation("edu.wpi.first.wpiutil:wpiutil-java:$wpilibVersion")
-    implementation("com.quickbirdstudios:opencv:4.5.3.0")
+    // Official OpenCV 4.10.0 Maven artifact — includes ArUco module with DICT_APRILTAG_36h11.
+    // com.quickbirdstudios:opencv had no Java ArUco. WPILib apriltag-java crashes Android VM.
+    implementation("org.opencv:opencv:4.10.0")
 }
